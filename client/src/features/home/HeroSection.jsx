@@ -27,7 +27,7 @@ const HeroSection = () => {
           <Button variant="primary" className="text-lg px-8 py-3">
             Order Now
           </Button>
-          <Button variant="white" className="text-lg px-8 py-3">
+          <Button variant="surface" className="text-lg px-8 py-3">
             Book a Table
           </Button>
         </div>

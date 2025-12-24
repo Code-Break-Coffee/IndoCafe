@@ -1,5 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
+import { OutletProvider } from './context/OutletContext';
+import { ThemeProvider } from './context/ThemeContext';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import Login from './pages/admin/Login';
 import Home from './pages/Home/Home';
@@ -14,14 +16,17 @@ import Dashboard from './pages/admin/Dashboard'; // Reusing as Overview for now
 
 function App() {
   return (
-    <AuthProvider>
-      <Router>
-        <Routes>
-          {/* Public Routes */}
-          <Route path="/" element={<Home />} />
-          <Route path="/login" element={<Login />} />
+    <ThemeProvider>
+      <AuthProvider>
+        <OutletProvider>
+          <Router>
+            <Routes>
+              {/* Public Routes */}
+              <Route path="/home" element={<Home />} />
+              <Route path="/" element={<Navigate to="/home" replace />} />
+              <Route path="/login" element={<Login />} />
 
-          {/* Super Admin Routes */}
+              {/* Super Admin Routes */}
           <Route path="/admin" element={
             <ProtectedRoute>
               <AdminLayout />
@@ -47,10 +52,12 @@ function App() {
           </Route>
 
           {/* Catch all - redirect to home */}
-          <Route path="*" element={<Navigate to="/" replace />} />
+          <Route path="*" element={<Navigate to="/home" replace />} />
         </Routes>
       </Router>
-    </AuthProvider>
+      </OutletProvider>
+      </AuthProvider>
+    </ThemeProvider>
   );
 }
 

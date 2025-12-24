@@ -5,11 +5,11 @@ import { featuredItems } from '../../data/mockData';
 
 const FeaturedItems = () => {
   return (
-    <section className="py-16 bg-gray-50">
+    <section className="py-16 bg-background">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Our Signature Dishes</h2>
-          <p className="text-gray-600 max-w-2xl mx-auto">
+          <h2 className="text-3xl md:text-4xl font-bold text-text mb-4">Our Signature Dishes</h2>
+          <p className="text-secondary max-w-2xl mx-auto">
             Discover the most loved dishes from our kitchen, crafted with passion and authentic ingredients.
           </p>
         </div>

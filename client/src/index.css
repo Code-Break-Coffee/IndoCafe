@@ -1,12 +1,18 @@
 @import "tailwindcss";
+@config "../tailwind.config.js";
 
 @theme {
-  --color-primary: #FF6B00;
-  --color-secondary: #1F2937;
-  --color-accent: #FBBF24;
-  --font-sans: Inter, sans-serif;
+  --color-primary: rgb(var(--brand-primary));
+  --color-secondary: rgb(var(--brand-secondary));
+  --color-background: rgb(var(--brand-background));
+  --color-surface: rgb(var(--brand-surface));
+  --color-text: rgb(var(--brand-text));
+  --color-on-primary: rgb(var(--brand-on-primary));
+  
+  --font-sans: var(--font-family), sans-serif;
+  --radius-DEFAULT: var(--border-radius);
 }
 
 body {
-  @apply bg-gray-50 text-gray-900;
+  @apply bg-background text-text transition-colors duration-300;
 }
