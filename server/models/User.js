@@ -1,6 +1,11 @@
 import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
 
+const ROLES = {
+  GLOBAL: ['SUPER_ADMIN', 'AREA_MANAGER'],
+  OPERATIONAL: ['OUTLET_MANAGER', 'CASHIER', 'WAITER', 'KITCHEN', 'DISPATCHER', 'RIDER']
+};
+
 const userSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -20,19 +25,19 @@ const userSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    enum: ['admin', 'manager', 'staff'],
-    default: 'staff',
+    enum: [...ROLES.GLOBAL, ...ROLES.OPERATIONAL],
+    default: 'CASHIER',
     required: true
   },
   phoneNumber: {
     type: String,
     required: true
   },
-  outletId: {
+  defaultOutletId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Outlet',
     required: function() {
-      return this.role === 'manager' || this.role === 'staff';
+      return ROLES.OPERATIONAL.includes(this.role);
     }
   }
 }, {
