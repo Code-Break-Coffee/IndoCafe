@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import api from '../../lib/axios';
 import { Plus, Store, UserPlus, MapPin, Phone, Loader2 } from 'lucide-react';
 import LocationPicker from '../../components/ui/LocationPicker';
+import Button from '../../components/ui/Button';
 
 const OutletManagement = () => {
   const [outlets, setOutlets] = useState([]);
@@ -244,13 +245,13 @@ const OutletManagement = () => {
                 </div>
               </div>
 
-              <button
+              <Button
                 type="submit"
                 disabled={submitting}
-                className="w-full py-2 px-4 bg-primary text-on-primary rounded-lg hover:opacity-90 disabled:opacity-50 transition-colors"
+                className="w-full"
               >
                 {submitting ? 'Creating...' : 'Create Outlet'}
-              </button>
+              </Button>
             </form>
           </div>
         </div>
@@ -324,13 +325,13 @@ const OutletManagement = () => {
               </div>
             </div>
 
-            <button
+            <Button
               type="submit"
               disabled={submitting}
-              className="w-full py-2 px-4 bg-primary text-on-primary rounded-lg hover:opacity-90 disabled:opacity-50 transition-colors"
+              className="w-full"
             >
               {submitting ? 'Creating...' : 'Create Manager'}
-            </button>
+            </Button>
           </form>
         </div>
       )}

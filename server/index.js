@@ -7,6 +7,7 @@ import { sendResponse } from './utils/responseHandler.js';
 import authRoutes from './routes/authRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
 import publicRoutes from './routes/publicRoutes.js';
+import menuRoutes from './routes/menuRoutes.js';
 
 // Load environment variables
 dotenv.config();
@@ -26,6 +27,7 @@ app.use(express.json()); // Parse JSON bodies
 app.use('/api/auth', authRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/public', publicRoutes);
+app.use('/api', menuRoutes);
 
 // Basic Route
 app.get('/', (req, res) => {

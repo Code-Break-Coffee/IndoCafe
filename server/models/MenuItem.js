@@ -10,7 +10,7 @@ const menuItemSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  price: {
+  basePrice: {
     type: Number,
     required: true,
     min: 0
@@ -34,10 +34,6 @@ const menuItemSchema = new mongoose.Schema({
   isVeg: {
     type: Boolean,
     required: true,
-    default: true
-  },
-  isAvailable: {
-    type: Boolean,
     default: true
   }
 }, {

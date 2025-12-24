@@ -1,16 +1,20 @@
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
 import { 
   ClipboardList, 
   Armchair, 
   ChefHat, 
   LogOut, 
   Menu,
-  Bell
+  Bell,
+  Sun,
+  Moon
 } from 'lucide-react';
 
 const ManagerLayout = () => {
   const { user, logout } = useAuth();
+  const { isDarkMode, toggleTheme } = useTheme();
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -21,17 +25,17 @@ const ManagerLayout = () => {
 
   const isActive = (path) => {
     return location.pathname.startsWith(path) 
-      ? "bg-emerald-600 text-white" 
-      : "text-slate-300 hover:bg-slate-700 hover:text-white";
+      ? "bg-primary text-on-primary" 
+      : "text-secondary hover:bg-secondary/10 hover:text-text";
   };
 
   return (
-    <div className="flex h-screen bg-gray-100">
+    <div className="flex h-screen bg-background">
       {/* Sidebar */}
-      <aside className="w-64 bg-slate-800 text-white hidden md:flex flex-col">
-        <div className="p-6 border-b border-slate-700">
-          <h1 className="text-2xl font-bold text-emerald-400">IndoCafe</h1>
-          <p className="text-xs text-slate-400 mt-1">Manager Portal</p>
+      <aside className="w-64 bg-surface border-r border-secondary/10 hidden md:flex flex-col">
+        <div className="p-6 border-b border-secondary/10">
+          <h1 className="text-2xl font-bold text-primary">IndoCafe</h1>
+          <p className="text-xs text-secondary mt-1">Manager Portal</p>
         </div>
         
         <nav className="flex-1 p-4 space-y-2">
@@ -49,14 +53,14 @@ const ManagerLayout = () => {
           </Link>
         </nav>
 
-        <div className="p-4 border-t border-slate-700">
+        <div className="p-4 border-t border-secondary/10">
           <div className="flex items-center px-4 py-2">
-            <div className="h-8 w-8 rounded-full bg-emerald-500 flex items-center justify-center text-sm font-bold">
+            <div className="h-8 w-8 rounded-full bg-primary/20 text-primary flex items-center justify-center text-sm font-bold">
               {user?.name?.charAt(0) || 'M'}
             </div>
             <div className="ml-3">
-              <p className="text-sm font-medium">{user?.name}</p>
-              <p className="text-xs text-slate-400 capitalize">{user?.role?.replace('_', ' ')}</p>
+              <p className="text-sm font-medium text-text">{user?.name}</p>
+              <p className="text-xs text-secondary capitalize">{user?.role?.replace('_', ' ')}</p>
             </div>
           </div>
         </div>
@@ -65,22 +69,30 @@ const ManagerLayout = () => {
       {/* Main Content */}
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Top Bar */}
-        <header className="bg-white shadow-sm z-10">
+        <header className="bg-surface shadow-sm z-10 border-b border-secondary/10">
           <div className="flex items-center justify-between px-6 py-4">
-            <button className="md:hidden text-gray-500 focus:outline-none">
+            <button className="md:hidden text-secondary focus:outline-none">
               <Menu className="h-6 w-6" />
             </button>
             
-            <h2 className="text-xl font-semibold text-gray-800">
+            <h2 className="text-xl font-semibold text-text">
               {location.pathname.split('/').pop().replace('-', ' ').toUpperCase()}
             </h2>
 
             <div className="flex items-center space-x-4">
-              <button className="p-2 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100">
+              {/* Theme Toggle */}
+              <button 
+                onClick={toggleTheme}
+                className="p-2 text-secondary hover:text-text rounded-full hover:bg-secondary/10 transition-colors"
+              >
+                {isDarkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+              </button>
+
+              <button className="p-2 text-secondary hover:text-text rounded-full hover:bg-secondary/10 transition-colors">
                 <Bell className="h-5 w-5" />
               </button>
               
-              <div className="h-6 w-px bg-gray-200 mx-2"></div>
+              <div className="h-6 w-px bg-secondary/20 mx-2"></div>
               
               <button 
                 onClick={handleLogout}
