@@ -2,6 +2,19 @@ import MenuItem from '../models/MenuItem.js';
 import OutletItemConfig from '../models/OutletItemConfig.js';
 import { sendResponse } from '../utils/responseHandler.js';
 
+// @desc    Get all global menu items
+// @route   GET /api/admin/menu
+// @access  Private (Super Admin)
+export const getAllGlobalMenuItems = async (req, res) => {
+  try {
+    const menuItems = await MenuItem.find({});
+    sendResponse(res, 200, menuItems, 'Menu items fetched successfully', true);
+  } catch (error) {
+    console.error('Error fetching menu items:', error);
+    sendResponse(res, 500, null, 'Server Error', false);
+  }
+};
+
 // @desc    Create a new Global MenuItem
 // @route   POST /api/admin/menu
 // @access  Private (Super Admin)
@@ -59,14 +72,23 @@ export const updateOutletItemStatus = async (req, res) => {
     // For this implementation, I will assume `req.user.defaultOutletId` is available 
     // (e.g. added by auth middleware if it fetches user details).
     
-    const outletId = req.user.defaultOutletId; 
+    const targetOutletId = req.body.outletId || req.user.defaultOutletId;
 
-    if (!outletId) {
+    if (!targetOutletId) {
         return sendResponse(res, 400, null, 'Manager is not assigned to an outlet', false);
     }
 
+    // Verify access
+    const hasAccess = 
+      (req.user.defaultOutletId && req.user.defaultOutletId.toString() === targetOutletId.toString()) ||
+      (req.user.assignedOutlets && req.user.assignedOutlets.some(o => (o._id || o).toString() === targetOutletId.toString()));
+
+    if (!hasAccess && req.user.role !== 'SUPER_ADMIN') {
+      return sendResponse(res, 403, null, 'Not authorized to manage this outlet', false);
+    }
+
     const config = await OutletItemConfig.findOneAndUpdate(
-      { outletId, menuItemId: itemId },
+      { outletId: targetOutletId, menuItemId: itemId },
       { 
         $set: { 
           isAvailable: isAvailable !== undefined ? isAvailable : true,
@@ -89,6 +111,10 @@ export const updateOutletItemStatus = async (req, res) => {
 export const getOutletMenu = async (req, res) => {
   try {
     const { outletId } = req.params;
+
+    if (!outletId || outletId === 'undefined') {
+      return sendResponse(res, 400, null, 'Invalid Outlet ID', false);
+    }
 
     // Step A: Fetch ALL Global MenuItems
     const globalItems = await MenuItem.find({}).lean();

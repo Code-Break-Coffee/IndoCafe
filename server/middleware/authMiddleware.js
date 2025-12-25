@@ -17,7 +17,7 @@ export const protect = async (req, res, next) => {
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
       // Get user from the token
-      req.user = await User.findById(decoded.id).select('-password');
+      req.user = await User.findById(decoded.id).select('-password').populate('assignedOutlets', 'name _id');
 
       if (!req.user) {
         return sendResponse(res, 401, null, 'Not authorized, user not found', false);

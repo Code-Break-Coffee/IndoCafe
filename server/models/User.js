@@ -39,7 +39,11 @@ const userSchema = new mongoose.Schema({
     required: function() {
       return ROLES.OPERATIONAL.includes(this.role);
     }
-  }
+  },
+  assignedOutlets: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Outlet'
+  }]
 }, {
   timestamps: true
 });

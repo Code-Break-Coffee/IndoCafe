@@ -10,7 +10,8 @@ import {
   Menu,
   Bell,
   Sun,
-  Moon
+  Moon,
+  Utensils
 } from 'lucide-react';
 
 const AdminLayout = () => {
@@ -47,6 +48,10 @@ const AdminLayout = () => {
           <Link to="/admin/outlets" className={`flex items-center px-4 py-3 rounded-lg transition-colors ${isActive('/admin/outlets')}`}>
             <Store className="h-5 w-5 mr-3" />
             Outlets
+          </Link>
+          <Link to="/admin/menu" className={`flex items-center px-4 py-3 rounded-lg transition-colors ${isActive('/admin/menu')}`}>
+            <Utensils className="h-5 w-5 mr-3" />
+            Global Menu
           </Link>
           <Link to="/admin/users" className={`flex items-center px-4 py-3 rounded-lg transition-colors ${isActive('/admin/users')}`}>
             <Users className="h-5 w-5 mr-3" />

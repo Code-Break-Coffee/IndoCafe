@@ -13,6 +13,10 @@ import ManagerLayout from './layouts/ManagerLayout';
 // Admin Pages
 import OutletManagement from './pages/admin/OutletManagement';
 import Dashboard from './pages/admin/Dashboard'; // Reusing as Overview for now
+import GlobalMenu from './pages/admin/GlobalMenu';
+
+// Manager Pages
+import MenuControl from './pages/manager/MenuControl';
 
 function App() {
   return (
@@ -34,6 +38,7 @@ function App() {
           }>
             <Route path="overview" element={<Dashboard />} />
             <Route path="outlets" element={<OutletManagement />} />
+            <Route path="menu" element={<GlobalMenu />} />
             <Route path="users" element={<div className="p-4">User Management (Coming Soon)</div>} />
             <Route path="analytics" element={<div className="p-4">Analytics (Coming Soon)</div>} />
             <Route index element={<Navigate to="/admin/overview" replace />} />
@@ -46,6 +51,7 @@ function App() {
             </ProtectedRoute>
           }>
             <Route path="live-orders" element={<div className="p-4">Live Orders (Coming Soon)</div>} />
+            <Route path="menu" element={<MenuControl />} />
             <Route path="tables" element={<div className="p-4">Table Management (Coming Soon)</div>} />
             <Route path="kitchen" element={<div className="p-4">Kitchen View (Coming Soon)</div>} />
             <Route index element={<Navigate to="/manager/live-orders" replace />} />

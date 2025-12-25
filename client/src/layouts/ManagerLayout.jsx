@@ -9,7 +9,8 @@ import {
   Menu,
   Bell,
   Sun,
-  Moon
+  Moon,
+  Utensils
 } from 'lucide-react';
 
 const ManagerLayout = () => {
@@ -42,6 +43,10 @@ const ManagerLayout = () => {
           <Link to="/manager/live-orders" className={`flex items-center px-4 py-3 rounded-lg transition-colors ${isActive('/manager/live-orders')}`}>
             <ClipboardList className="h-5 w-5 mr-3" />
             Live Orders
+          </Link>
+          <Link to="/manager/menu" className={`flex items-center px-4 py-3 rounded-lg transition-colors ${isActive('/manager/menu')}`}>
+            <Utensils className="h-5 w-5 mr-3" />
+            Menu Control
           </Link>
           <Link to="/manager/tables" className={`flex items-center px-4 py-3 rounded-lg transition-colors ${isActive('/manager/tables')}`}>
             <Armchair className="h-5 w-5 mr-3" />

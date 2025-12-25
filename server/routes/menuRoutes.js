@@ -1,5 +1,5 @@
 import express from 'express';
-import { createGlobalMenuItem, updateOutletItemStatus, getOutletMenu } from '../controllers/menuController.js';
+import { createGlobalMenuItem, updateOutletItemStatus, getOutletMenu, getAllGlobalMenuItems } from '../controllers/menuController.js';
 import { protect } from '../middleware/authMiddleware.js';
 import { authorize } from '../middleware/rbacMiddleware.js';
 
@@ -9,7 +9,9 @@ const router = express.Router();
 router.get('/public/menu/:outletId', getOutletMenu);
 
 // Admin Routes
-router.post('/admin/menu', protect, authorize('SUPER_ADMIN'), createGlobalMenuItem);
+router.route('/admin/menu')
+  .get(protect, authorize('SUPER_ADMIN'), getAllGlobalMenuItems)
+  .post(protect, authorize('SUPER_ADMIN'), createGlobalMenuItem);
 
 // Manager Routes
 // Note: The controller expects req.user.defaultOutletId. 

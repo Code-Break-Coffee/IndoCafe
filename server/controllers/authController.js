@@ -37,7 +37,8 @@ export const register = async (req, res) => {
       password,
       role: role || 'staff',
       phoneNumber,
-      outletId: role === 'admin' ? undefined : outletId, // outletId optional for admin
+      defaultOutletId: role === 'admin' ? undefined : outletId, // Map outletId to defaultOutletId
+      assignedOutlets: outletId ? [outletId] : [], // Initialize assignedOutlets with default
     });
 
     if (user) {
@@ -46,8 +47,9 @@ export const register = async (req, res) => {
         name: user.name,
         email: user.email,
         role: user.role,
-        outletId: user.outletId,
-        token: generateToken(user._id, user.role, user.outletId),
+        defaultOutletId: user.defaultOutletId,
+        assignedOutlets: user.assignedOutlets,
+        token: generateToken(user._id, user.role, user.defaultOutletId),
       }, 'User registered successfully', true);
     } else {
       sendResponse(res, 400, null, 'Invalid user data', false);
@@ -66,7 +68,7 @@ export const login = async (req, res) => {
     const { email, password } = req.body;
 
     // Check for user email
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email }).populate('assignedOutlets', 'name _id');
 
     if (user && (await user.matchPassword(password))) {
       sendResponse(res, 200, {
@@ -74,8 +76,9 @@ export const login = async (req, res) => {
         name: user.name,
         email: user.email,
         role: user.role,
-        outletId: user.outletId,
-        token: generateToken(user._id, user.role, user.outletId),
+        defaultOutletId: user.defaultOutletId,
+        assignedOutlets: user.assignedOutlets,
+        token: generateToken(user._id, user.role, user.defaultOutletId),
       }, 'Login successful', true);
     } else {
       sendResponse(res, 401, null, 'Invalid credentials', false);
@@ -96,7 +99,8 @@ export const getMe = async (req, res) => {
       name: req.user.name,
       email: req.user.email,
       role: req.user.role,
-      outletId: req.user.outletId,
+      defaultOutletId: req.user.defaultOutletId,
+      assignedOutlets: req.user.assignedOutlets,
       phoneNumber: req.user.phoneNumber
     };
     
