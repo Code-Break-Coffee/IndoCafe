@@ -15,8 +15,13 @@ export const createStaff = async (req, res) => {
       throw new Error('Missing required fields');
     }
 
+    // Ensure email is a string to avoid NoSQL injection via query operators
+    if (typeof email !== 'string') {
+      throw new Error('Invalid email format');
+    }
+
     // Check if user already exists
-    const existingUser = await User.findOne({ email }).session(session);
+    const existingUser = await User.findOne({ email: { $eq: email } }).session(session);
     if (existingUser) {
       throw new Error('User with this email already exists');
     }
