@@ -27,7 +27,7 @@ const Navbar = () => {
         setAllOutlets(res.data.data);
       }
     } catch (error) {
-      console.error("Failed to fetch outlets", error);
+      console.error('Failed to fetch outlets', error);
     }
   };
 
@@ -43,7 +43,9 @@ const Navbar = () => {
 
   return (
     <>
-      <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled ? 'bg-surface/90 backdrop-blur-md shadow-md py-2' : 'bg-transparent py-4'}`}>
+      <nav
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled ? 'bg-surface/90 backdrop-blur-md shadow-md py-2' : 'bg-transparent py-4'}`}
+      >
         <div className="container mx-auto px-4 flex justify-between items-center">
           {/* Logo */}
           <div className="flex items-center">
@@ -52,20 +54,40 @@ const Navbar = () => {
 
           {/* Desktop Menu */}
           <div className="hidden md:flex items-center space-x-8">
-            <a href="#" className={`font-medium hover:text-primary transition-colors ${isScrolled ? 'text-text' : 'text-text'}`}>Home</a>
-            <a href="#" className={`font-medium hover:text-primary transition-colors ${isScrolled ? 'text-text' : 'text-text'}`}>Menu</a>
-            <a href="#" className={`font-medium hover:text-primary transition-colors ${isScrolled ? 'text-text' : 'text-text'}`}>About</a>
-            <a href="#" className={`font-medium hover:text-primary transition-colors ${isScrolled ? 'text-text' : 'text-text'}`}>Contact</a>
+            <a
+              href="#"
+              className={`font-medium hover:text-primary transition-colors ${isScrolled ? 'text-text' : 'text-white'}`}
+            >
+              Home
+            </a>
+            <a
+              href="#"
+              className={`font-medium hover:text-primary transition-colors ${isScrolled ? 'text-text' : 'text-white'}`}
+            >
+              Menu
+            </a>
+            <a
+              href="#"
+              className={`font-medium hover:text-primary transition-colors ${isScrolled ? 'text-text' : 'text-white'}`}
+            >
+              About
+            </a>
+            <a
+              href="#"
+              className={`font-medium hover:text-primary transition-colors ${isScrolled ? 'text-text' : 'text-white'}`}
+            >
+              Contact
+            </a>
           </div>
 
           {/* Actions */}
           <div className="flex items-center space-x-4">
             {/* Outlet Selector */}
-            <button 
+            <button
               onClick={handleOpenModal}
               className={`flex items-center space-x-2 px-3 py-1.5 rounded-full text-sm font-medium transition-colors border ${
-                isScrolled 
-                  ? 'bg-background border-secondary/20 text-text hover:border-primary/50' 
+                isScrolled
+                  ? 'bg-background border-secondary/20 text-text hover:border-primary/50'
                   : 'bg-surface/50 border-secondary/20 text-text hover:bg-surface backdrop-blur-sm'
               }`}
             >
@@ -77,19 +99,23 @@ const Navbar = () => {
             </button>
 
             {/* Theme Toggle */}
-            <button 
+            <button
               onClick={toggleTheme}
-              className={`p-2 rounded-full transition-colors ${isScrolled ? 'text-text hover:bg-secondary/10' : 'text-text hover:bg-surface/50'}`}
+              className={`p-2 rounded-full transition-colors ${isScrolled ? 'text-text hover:bg-secondary/10' : 'hover:bg-surface/50 text-white hover:text-text'}`}
             >
-              {isDarkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+              {!isDarkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
             </button>
 
             {/* Cart */}
-            <button className={`relative p-2 rounded-full transition-colors ${isScrolled ? 'text-text hover:bg-secondary/10' : 'text-text hover:bg-surface/50'}`}>
+            <button
+              className={`relative p-2 rounded-full transition-colors ${isScrolled ? 'text-text hover:bg-secondary/10' : 'hover:bg-surface/50 text-white hover:text-text'}`}
+            >
               <ShoppingBag className="h-6 w-6" />
-              <span className="absolute top-0 right-0 bg-primary text-on-primary text-xs rounded-full h-4 w-4 flex items-center justify-center">0</span>
+              <span className="absolute top-0 right-0 bg-primary text-on-primary text-xs rounded-full h-4 w-4 flex items-center justify-center">
+                0
+              </span>
             </button>
-            
+
             <Button variant="primary" className="hidden md:block">
               Order Online
             </Button>
@@ -125,7 +151,9 @@ const Navbar = () => {
                         <p className="text-sm text-secondary mt-1">{outlet.address}</p>
                       </div>
                       {selectedOutlet?._id === outlet._id && (
-                        <span className="text-primary text-xs font-bold bg-primary/10 px-2 py-1 rounded-full">Selected</span>
+                        <span className="text-primary text-xs font-bold bg-primary/10 px-2 py-1 rounded-full">
+                          Selected
+                        </span>
                       )}
                     </div>
                   </button>
