@@ -4,6 +4,8 @@ import {
   getAllOutlets,
   createUser,
   getUsers,
+  updateUser,
+  deleteUser,
 } from '../controllers/adminController.js';
 import { protect } from '../middleware/authMiddleware.js';
 import { authorize } from '../middleware/rbacMiddleware.js';
@@ -18,5 +20,7 @@ router.route('/outlets').post(createOutlet).get(getAllOutlets);
 
 router.post('/users', createUser);
 router.get('/users', getUsers);
+router.put('/users/:id', updateUser);
+router.delete('/users/:id', deleteUser);
 
 export default router;

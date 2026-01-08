@@ -6,6 +6,34 @@ const UserManagement = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedRole, setSelectedRole] = useState('');
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingUser, setEditingUser] = useState(null);
+  const [saveLoading, setSaveLoading] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
+  const [userToDelete, setUserToDelete] = useState(null);
+  const [outlets, setOutlets] = useState([]);
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    role: '',
+    phoneNumber: '',
+    defaultOutletId: '',
+    password: '',
+  });
+
+  const roleOptions = [
+    { value: 'SUPER_ADMIN', label: 'Super Admin' },
+    { value: 'AREA_MANAGER', label: 'Area Manager' },
+    { value: 'OUTLET_MANAGER', label: 'Outlet Manager' },
+    { value: 'CASHIER', label: 'Cashier' },
+    { value: 'WAITER', label: 'Waiter' },
+    { value: 'KITCHEN', label: 'Kitchen' },
+    { value: 'DISPATCHER', label: 'Dispatcher' },
+    { value: 'RIDER', label: 'Rider' },
+  ];
+
+  const operationalRoles = new Set(['OUTLET_MANAGER', 'CASHIER', 'WAITER', 'KITCHEN', 'DISPATCHER', 'RIDER']);
 
   const fetchUsers = useCallback(async () => {
     try {
@@ -26,8 +54,131 @@ const UserManagement = () => {
     fetchUsers();
   }, [fetchUsers]);
 
+  useEffect(() => {
+    const fetchOutlets = async () => {
+      try {
+        const res = await api.get('/api/admin/outlets');
+        if (res.data.success) {
+          setOutlets(res.data.data);
+        }
+      } catch (err) {
+        console.error('Error fetching outlets', err);
+      }
+    };
+
+    fetchOutlets();
+  }, []);
+
   const handleRoleFilter = (role) => {
     setSelectedRole(role === selectedRole ? '' : role);
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleOpenEdit = (user) => {
+    setEditingUser(user);
+    setFormData({
+      name: user.name || '',
+      email: user.email || '',
+      role: user.role || '',
+      phoneNumber: user.phoneNumber || '',
+      defaultOutletId: user.defaultOutletId?._id || '',
+      password: '',
+    });
+    setIsModalOpen(true);
+  };
+
+  const handleOpenAdd = () => {
+    setEditingUser(null);
+    setFormData({
+      name: '',
+      email: '',
+      role: '',
+      phoneNumber: '',
+      defaultOutletId: '',
+      password: '',
+    });
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setEditingUser(null);
+    setFormData({
+      name: '',
+      email: '',
+      role: '',
+      phoneNumber: '',
+      defaultOutletId: '',
+      password: '',
+    });
+  };
+
+  const handleOpenDelete = (user) => {
+    setUserToDelete(user);
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleCloseDelete = () => {
+    setIsDeleteModalOpen(false);
+    setUserToDelete(null);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const isEdit = Boolean(editingUser);
+
+    if (!formData.name || !formData.email || !formData.role || !formData.phoneNumber) {
+      alert('Please fill all required fields');
+      return;
+    }
+
+    if (!isEdit && !formData.password) {
+      alert('Password is required for new users');
+      return;
+    }
+
+    if (operationalRoles.has(formData.role) && !formData.defaultOutletId) {
+      alert('Please select a default outlet for operational roles');
+      return;
+    }
+
+    try {
+      setSaveLoading(true);
+      if (isEdit) {
+        await api.put(`/api/admin/users/${editingUser._id}`, {
+          name: formData.name,
+          email: formData.email,
+          role: formData.role,
+          phoneNumber: formData.phoneNumber,
+          outletId: formData.defaultOutletId || null,
+        });
+      } else {
+        await api.post('/api/admin/users', {
+          name: formData.name,
+          email: formData.email,
+          role: formData.role,
+          phoneNumber: formData.phoneNumber,
+          password: formData.password,
+          outletId: formData.defaultOutletId || null,
+        });
+      }
+
+      await fetchUsers();
+      handleCloseModal();
+    } catch (err) {
+      console.error('Error saving user', err);
+      alert('Failed to save user. Please try again.');
+    } finally {
+      setSaveLoading(false);
+    }
   };
 
   if (loading)
@@ -45,7 +196,10 @@ const UserManagement = () => {
           <p className="text-secondary">Manage all users.</p>
         </div>
         <div className="flex gap-3">
-          <button className="flex items-center gap-2 px-4 py-2 bg-primary text-on-primary rounded-lg hover:opacity-90 transition-colors">
+          <button
+            onClick={handleOpenAdd}
+            className="flex items-center gap-2 px-4 py-2 bg-primary text-on-primary rounded-lg hover:opacity-90 transition-colors"
+          >
             <Plus size={20} />
             Add User
           </button>
@@ -109,9 +263,20 @@ const UserManagement = () => {
                     <td className="py-3 px-4 font-medium">{user.role}</td>
                     <td className="py-3 px-4 font-medium">{user.phoneNumber}</td>
                     <td className="py-3 px-4 font-medium text-right">
-                      <button className="flex items-center gap-2 px-4 py-2 bg-secondary text-white rounded-lg hover:opacity-90 transition-colors hover:cursor-pointer">
-                        Edit
-                      </button>
+                      <div className="flex justify-end gap-2">
+                        <button
+                          onClick={() => handleOpenEdit(user)}
+                          className="flex items-center gap-2 px-3 py-2 bg-secondary text-white rounded-lg hover:opacity-90 transition-colors hover:cursor-pointer"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => handleOpenDelete(user)}
+                          className="flex items-center gap-2 px-3 py-2 bg-red-600 text-white rounded-lg hover:opacity-90 transition-colors hover:cursor-pointer"
+                        >
+                          Delete
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -120,6 +285,173 @@ const UserManagement = () => {
           </div>
         </div>
       </div>
+
+      {isModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+          <div className="bg-surface rounded-xl shadow-xl w-full max-w-md overflow-hidden">
+            <div className="p-6 border-b border-secondary/10">
+              <h2 className="text-xl font-bold text-primary">{editingUser ? 'Edit User' : 'Add User'}</h2>
+            </div>
+            <form onSubmit={handleSubmit} className="p-6 space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-secondary mb-1">Name</label>
+                <input
+                  type="text"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleInputChange}
+                  required
+                  className="w-full px-3 py-2 rounded-lg border border-secondary/20 focus:outline-none focus:ring-2 focus:ring-primary/50 bg-background"
+                />
+              </div>
+
+              {!editingUser && (
+                <div>
+                  <label className="block text-sm font-medium text-secondary mb-1">Password</label>
+                  <input
+                    type="password"
+                    name="password"
+                    value={formData.password}
+                    onChange={handleInputChange}
+                    required
+                    className="w-full px-3 py-2 rounded-lg border border-secondary/20 focus:outline-none focus:ring-2 focus:ring-primary/50 bg-background"
+                  />
+                </div>
+              )}
+
+              <div>
+                <label className="block text-sm font-medium text-secondary mb-1">Email</label>
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  required
+                  className="w-full px-3 py-2 rounded-lg border border-secondary/20 focus:outline-none focus:ring-2 focus:ring-primary/50 bg-background"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-secondary mb-1">Role</label>
+                  <select
+                    name="role"
+                    value={formData.role}
+                    onChange={handleInputChange}
+                    required
+                    className="w-full px-3 py-2 rounded-lg border border-secondary/20 focus:outline-none focus:ring-2 focus:ring-primary/50 bg-background"
+                  >
+                    <option value="" disabled>
+                      Select Role
+                    </option>
+                    {roleOptions.map((role) => (
+                      <option key={role.value} value={role.value}>
+                        {role.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-secondary mb-1">Phone Number</label>
+                  <input
+                    type="text"
+                    name="phoneNumber"
+                    value={formData.phoneNumber}
+                    onChange={handleInputChange}
+                    required
+                    className="w-full px-3 py-2 rounded-lg border border-secondary/20 focus:outline-none focus:ring-2 focus:ring-primary/50 bg-background"
+                  />
+                </div>
+              </div>
+
+              {operationalRoles.has(formData.role) && (
+                <div>
+                  <label className="block text-sm font-medium text-secondary mb-1">Default Outlet</label>
+                  <select
+                    name="defaultOutletId"
+                    value={formData.defaultOutletId}
+                    onChange={handleInputChange}
+                    required
+                    className="w-full px-3 py-2 rounded-lg border border-secondary/20 focus:outline-none focus:ring-2 focus:ring-primary/50 bg-background"
+                  >
+                    <option value="" disabled>
+                      Select Outlet
+                    </option>
+                    {outlets.map((outlet) => (
+                      <option key={outlet._id} value={outlet._id}>
+                        {outlet.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
+              <div className="flex justify-end gap-3 mt-6">
+                <button
+                  type="button"
+                  onClick={handleCloseModal}
+                  className="px-4 py-2 text-secondary hover:bg-secondary/10 rounded-lg transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={saveLoading}
+                  className="px-4 py-2 bg-primary text-on-primary rounded-lg hover:opacity-90 transition-colors disabled:opacity-50"
+                >
+                  {saveLoading ? 'Saving...' : 'Save Changes'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {isDeleteModalOpen && userToDelete && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+          <div className="bg-surface rounded-xl shadow-xl w-full max-w-md overflow-hidden">
+            <div className="p-6 border-b border-secondary/10">
+              <h2 className="text-xl font-bold text-primary">Delete User</h2>
+            </div>
+            <div className="p-6 space-y-4">
+              <p className="text-secondary">
+                Are you sure you want to delete <span className="font-semibold text-text">{userToDelete.name}</span>?
+                This action cannot be undone.
+              </p>
+              <div className="flex justify-end gap-3 mt-6">
+                <button
+                  type="button"
+                  onClick={handleCloseDelete}
+                  className="px-4 py-2 text-secondary hover:bg-secondary/10 rounded-lg transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  disabled={deleteLoading}
+                  onClick={async () => {
+                    if (!userToDelete) return;
+                    try {
+                      setDeleteLoading(true);
+                      await api.delete(`/api/admin/users/${userToDelete._id}`);
+                      await fetchUsers();
+                      handleCloseDelete();
+                    } catch (err) {
+                      console.error('Error deleting user', err);
+                      alert('Failed to delete user. Please try again.');
+                    } finally {
+                      setDeleteLoading(false);
+                    }
+                  }}
+                  className="px-4 py-2 bg-red-600 text-on-primary rounded-lg hover:opacity-90 transition-colors disabled:opacity-50"
+                >
+                  {deleteLoading ? 'Deleting...' : 'Delete'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
