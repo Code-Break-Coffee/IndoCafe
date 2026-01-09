@@ -21,6 +21,13 @@ import UserManagement from './pages/admin/UserManagement';
 import MenuControl from './pages/manager/MenuControl';
 import StaffManagement from './pages/manager/StaffManagement';
 import TableManagement from './pages/manager/TableManagement';
+import LiveOrders from './pages/manager/LiveOrders';
+
+// Kitchen Pages
+import KitchenDashboard from './pages/kitchen/KitchenDashboard';
+
+// Waiter Pages
+import WaiterDashboard from './pages/waiter/WaiterDashboard';
 
 import { CartProvider } from './context/CartContext';
 import CartDrawer from './components/cart/CartDrawer';
@@ -69,7 +76,7 @@ function App() {
                     </ProtectedRoute>
                   }
                 >
-                  <Route path="live-orders" element={<div className="p-4">Live Orders (Coming Soon)</div>} />
+                  <Route path="live-orders" element={<LiveOrders />} />
                   <Route path="menu" element={<MenuControl />} />
                   <Route path="staff" element={<StaffManagement />} />
                   <Route path="tables" element={<TableManagement />} />
@@ -81,7 +88,7 @@ function App() {
                   path="/kitchen"
                   element={
                     <ProtectedRoute allowedRoles={['SUPER_ADMIN', 'OUTLET_MANAGER', 'KITCHEN']}>
-                      <div className="p-4">Kitchen Interface (Coming Soon)</div>
+                      <KitchenDashboard />
                     </ProtectedRoute>
                   }
                 />
@@ -91,7 +98,7 @@ function App() {
                   path="/waiter"
                   element={
                     <ProtectedRoute allowedRoles={['SUPER_ADMIN', 'OUTLET_MANAGER', 'WAITER']}>
-                      <div className="p-4">Waiter Interface (Coming Soon)</div>
+                      <WaiterDashboard />
                     </ProtectedRoute>
                   }
                 />
