@@ -11,6 +11,7 @@ import menuRoutes from './routes/menuRoutes.js';
 import staffRoutes from './routes/staffRoutes.js';
 import reservationRoutes from './routes/reservationRoutes.js';
 import orderRoutes from './routes/orderRoutes.js';
+import tableRoutes from './routes/tableRoutes.js';
 
 // Load environment variables
 dotenv.config();
@@ -34,6 +35,7 @@ app.use('/api', menuRoutes);
 app.use('/api/manager/staff', staffRoutes);
 app.use('/api', reservationRoutes);
 app.use('/api', orderRoutes);
+app.use('/api/manager/tables', tableRoutes);
 
 // Basic Route
 app.get('/', (req, res) => {

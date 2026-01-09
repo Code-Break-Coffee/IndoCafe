@@ -17,16 +17,30 @@ export const protect = async (req, res, next) => {
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
       // Get user from the token
-      req.user = await User.findById(decoded.id).select('-password').populate('assignedOutlets', 'name _id');
+      req.user = await User.findById(decoded.id)
+        .select('-password')
+        .populate('assignedOutlets', 'name _id');
 
       if (!req.user) {
-        return sendResponse(res, 401, null, 'Not authorized, user not found', false);
+        return sendResponse(
+          res,
+          401,
+          null,
+          'Not authorized, user not found',
+          false
+        );
       }
 
       next();
     } catch (error) {
       console.error(error);
-      return sendResponse(res, 401, null, 'Not authorized, token failed', false);
+      return sendResponse(
+        res,
+        401,
+        null,
+        'Not authorized, token failed',
+        false
+      );
     }
   }
 
@@ -41,4 +55,20 @@ export const adminOnly = (req, res, next) => {
   } else {
     return sendResponse(res, 403, null, 'Not authorized as an admin', false);
   }
+};
+
+// Generic authorize middleware accepting allowed roles
+export const authorize = (...roles) => {
+  return (req, res, next) => {
+    if (!req.user || !roles.includes(req.user.role)) {
+      return sendResponse(
+        res,
+        403,
+        null,
+        `User role ${req.user ? req.user.role : 'unknown'} is not authorized to access this route`,
+        false
+      );
+    }
+    next();
+  };
 };

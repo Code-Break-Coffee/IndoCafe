@@ -20,6 +20,7 @@ import UserManagement from './pages/admin/UserManagement';
 // Manager Pages
 import MenuControl from './pages/manager/MenuControl';
 import StaffManagement from './pages/manager/StaffManagement';
+import TableManagement from './pages/manager/TableManagement';
 
 import { CartProvider } from './context/CartContext';
 import CartDrawer from './components/cart/CartDrawer';
@@ -71,7 +72,7 @@ function App() {
                   <Route path="live-orders" element={<div className="p-4">Live Orders (Coming Soon)</div>} />
                   <Route path="menu" element={<MenuControl />} />
                   <Route path="staff" element={<StaffManagement />} />
-                  <Route path="tables" element={<div className="p-4">Table Management (Coming Soon)</div>} />
+                  <Route path="tables" element={<TableManagement />} />
                   <Route index element={<Navigate to="/manager/live-orders" replace />} />
                 </Route>
 
