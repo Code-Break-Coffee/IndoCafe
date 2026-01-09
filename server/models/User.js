@@ -41,6 +41,11 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    position: {
+      type: String,
+      required: false, // Optional, typically for Kitchen/Waiter specific roles
+      trim: true,
+    },
     defaultOutletId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Outlet',

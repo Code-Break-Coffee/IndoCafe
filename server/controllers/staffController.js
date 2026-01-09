@@ -8,7 +8,16 @@ export const createStaff = async (req, res) => {
   session.startTransaction();
 
   try {
-    const { name, email, password, role, outletId, shiftStartTime, phoneNumber } = req.body;
+    const {
+      name,
+      email,
+      password,
+      role,
+      outletId,
+      shiftStartTime,
+      phoneNumber,
+      position,
+    } = req.body;
 
     // Basic validation
     if (!name || !email || !password || !role || !outletId) {
@@ -21,7 +30,9 @@ export const createStaff = async (req, res) => {
     }
 
     // Check if user already exists
-    const existingUser = await User.findOne({ email: { $eq: email } }).session(session);
+    const existingUser = await User.findOne({ email: { $eq: email } }).session(
+      session
+    );
     if (existingUser) {
       throw new Error('User with this email already exists');
     }
@@ -36,9 +47,10 @@ export const createStaff = async (req, res) => {
       email,
       password: hashedPassword,
       role,
-      phoneNumber: phoneNumber || '000-000-0000', // Default if not provided, though schema requires it
+      phoneNumber: phoneNumber || '000-000-0000', // Default if not provided
+      position: position || '', // Optional position logic
       defaultOutletId: outletId,
-      assignedOutlets: [outletId]
+      assignedOutlets: [outletId],
     });
 
     await newUser.save({ session });
@@ -50,8 +62,8 @@ export const createStaff = async (req, res) => {
       shiftDetails: {
         startTime: shiftStartTime,
         endTime: '', // Can be updated later
-        daysOff: []
-      }
+        daysOff: [],
+      },
     });
 
     await newStaffProfile.save({ session });
@@ -66,10 +78,9 @@ export const createStaff = async (req, res) => {
         name: newUser.name,
         email: newUser.email,
         role: newUser.role,
-        profile: newStaffProfile
-      }
+        profile: newStaffProfile,
+      },
     });
-
   } catch (error) {
     await session.abortTransaction();
     session.endSession();
@@ -86,9 +97,9 @@ export const getStaffByOutlet = async (req, res) => {
       .sort({ createdAt: -1 });
 
     // Filter out profiles where user might be null (if user was deleted but profile wasn't - edge case)
-    const validStaff = staffProfiles.filter(profile => profile.user);
+    const validStaff = staffProfiles.filter((profile) => profile.user);
 
-    const formattedStaff = validStaff.map(profile => ({
+    const formattedStaff = validStaff.map((profile) => ({
       _id: profile.user._id, // Return User ID as the main ID
       profileId: profile._id,
       name: profile.user.name,
@@ -96,7 +107,7 @@ export const getStaffByOutlet = async (req, res) => {
       role: profile.user.role,
       phoneNumber: profile.user.phoneNumber,
       shiftDetails: profile.shiftDetails,
-      currentStatus: profile.currentStatus
+      currentStatus: profile.currentStatus,
     }));
 
     res.status(200).json(formattedStaff);

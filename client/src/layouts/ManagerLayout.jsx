@@ -1,7 +1,7 @@
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContextValues';
 import { useTheme } from '../context/ThemeContext';
-import { ClipboardList, Armchair, ChefHat, LogOut, Menu, Bell, Sun, Moon, Utensils } from 'lucide-react';
+import { ClipboardList, Armchair, ChefHat, LogOut, Menu, Bell, Sun, Moon, Utensils, Users } from 'lucide-react';
 
 const ManagerLayout = () => {
   const { user, logout } = useAuth();
@@ -57,6 +57,13 @@ const ManagerLayout = () => {
           >
             <ChefHat className="h-5 w-5 mr-3" />
             Kitchen View
+          </Link>
+          <Link
+            to="/manager/staff"
+            className={`flex items-center px-4 py-3 rounded-lg transition-colors ${isActive('/manager/staff')}`}
+          >
+            <Users className="h-5 w-5 mr-3" />
+            Staff
           </Link>
         </nav>
 
