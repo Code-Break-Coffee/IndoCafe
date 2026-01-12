@@ -19,9 +19,11 @@ _Internal tools for running the restaurant day-to-day._
 - [x] **Menu Management**: Master catalog creation.
 - [ ] **Menu Overrides**: Local outlet capabilities to toggle item availability/price.
 - [ ] **Order Management**: Schema design for Orders (Dine-in/Delivery).
-- [ ] **Kitchen Display System (KDS)**: Real-time view for kitchen staff to manage active orders.
-- [ ] **Table Management**: Visual map or list of tables for Waiters.
+- [x] **Kitchen Display System (KDS)**: Real-time view for kitchen staff to manage active orders.
+- [x] **Table Management**: Visual map or list of tables for Waiters.
 - [ ] **Inventory Basics**: Tracking stock deduction based on menu items sold.
+- [ ] **Profile Refactor**: Optimization of ProfileScreen and Image Uploads.
+- [ ] **Bubble Navbar**: Custom bottom navigation implementation.
 
 ## 🔴 Phase 3: Customer Experience
 

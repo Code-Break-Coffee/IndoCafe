@@ -18,6 +18,7 @@ This project is organized as a monorepo:
 
 2.  **Install Dependencies**
     Run this command from the root directory to install dependencies for both client and server:
+
     ```bash
     npm run install-all
     ```
@@ -31,6 +32,7 @@ This project is organized as a monorepo:
     ```bash
     npm run dev
     ```
+
     - Client: http://localhost:5173
     - Server: http://localhost:5000
 
@@ -38,6 +40,9 @@ This project is organized as a monorepo:
 
 - **Linting:** `npm run lint` (Checks both client and server)
 - **Formatting:** VS Code is configured to format on save using Prettier.
+- **Staff Onboarding**: Admin ability to create Outlet Managers; Managers creating operational staff.
+- **Kitchen Dashboard**: Real-time order management for kitchen staff.
+- **Waiter Dashboard**: Table management and order status tracking.
 
 ## Architecture
 

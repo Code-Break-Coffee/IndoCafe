@@ -14,13 +14,13 @@ Waitstaff serving Dine-in customers, or a Cashier at the counter. They are mobil
 
 ## 🛠️ Key Features & Implementation Status
 
-| Feature              | Description                                                                        | Status       |
-| :------------------- | :--------------------------------------------------------------------------------- | :----------- |
-| **Visual Table Map** | Layout of the restaurant indicating Occupied/Free/Reserved tables.                 | ❌ **To Do** |
-| **Order Taking**     | Fast search to add items to a table's bill. Supports modifiers (e.g., "No Onion"). | ❌ **To Do** |
-| **Order Status**     | Real-time updates when Kitchen marks food as "Ready".                              | ❌ **To Do** |
-| **Bill Splitting**   | Functionality to split the bill by item or by head count.                          | ❌ **To Do** |
-| **Payments**         | Integration with Card Terminals or Cash entry.                                     | ❌ **To Do** |
+| Feature              | Description                                                                        | Status         |
+| :------------------- | :--------------------------------------------------------------------------------- | :------------- |
+| **Visual Table Map** | Layout of the restaurant indicating Occupied/Free/Reserved tables.                 | ✅ **Done**    |
+| **Order Taking**     | Fast search to add items to a table's bill. Supports modifiers (e.g., "No Onion"). | ⚠️ **Partial** |
+| **Order Status**     | Real-time updates when Kitchen marks food as "Ready".                              | ✅ **Done**    |
+| **Bill Splitting**   | Functionality to split the bill by item or by head count.                          | ❌ **To Do**   |
+| **Payments**         | Integration with Card Terminals or Cash entry.                                     | ❌ **To Do**   |
 
 ## 🔄 Daily Workflow
 

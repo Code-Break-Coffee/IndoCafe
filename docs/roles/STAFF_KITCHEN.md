@@ -16,9 +16,9 @@ Chefs, Line Cooks, and Expediters working in a hot, noisy, high-pressure environ
 
 | Feature                          | Description                                                                                                         | Status       |
 | :------------------------------- | :------------------------------------------------------------------------------------------------------------------ | :----------- |
-| **KDS (Kitchen Display System)** | A Kanban-style board showing active tickets. Configurable by station (e.g., "Grill Station" only sees Grill items). | ❌ **To Do** |
-| **Ticket Timer**                 | visual indicator (Green/Yellow/Red) showing how long an order has been waiting.                                     | ❌ **To Do** |
-| **Status Toggling**              | Single-tap to move item from "Pending" to "Ready".                                                                  | ❌ **To Do** |
+| **KDS (Kitchen Display System)** | A Kanban-style board showing active tickets. Configurable by station (e.g., "Grill Station" only sees Grill items). | ✅ **Done**  |
+| **Ticket Timer**                 | visual indicator (Green/Yellow/Red) showing how long an order has been waiting.                                     | ✅ **Done**  |
+| **Status Toggling**              | Single-tap to move item from "Pending" to "Ready".                                                                  | ✅ **Done**  |
 | **Recipe Viewer**                | Quick access to standard operating procedures/recipes for items.                                                    | ❌ **To Do** |
 | **Waste Logging**                | Quickly button to log "Dropped/Spoiled" items for inventory tracking.                                               | ❌ **To Do** |
 
