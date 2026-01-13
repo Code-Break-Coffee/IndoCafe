@@ -21,6 +21,7 @@ The person responsible for a _specific_ physical or cloud kitchen location. They
 | **Inventory Management**  | Log daily stock levels; set low-stock alerts.                              | ❌ **To Do**       |
 | **Daily Reports**         | "EOD" (End of Day) report generation (Sales vs Cost).                      | ❌ **To Do**       |
 | **Refunds/Cancellations** | Authority to approve voids or refunds requested by waiters/cashiers.       | ❌ **To Do**       |
+| **Price Edit Request Approve by Admin** | Admin needs to approve request of price edit.      | ❌ **To Do**       |
 
 ## 🔄 Daily Workflow
 

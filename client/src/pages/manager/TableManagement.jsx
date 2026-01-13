@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import FloorPlanEditor from '../../components/floorplan/FloorPlanEditor';
 import { useAuth } from '../../context/AuthContextValues';
+import { useOutlet } from '../../context/OutletContextValues';
 import api from '../../lib/axios';
 import Button from '../../components/ui/Button';
 import { LayoutDashboard, List, Plus, Trash2, Edit2, X, Filter } from 'lucide-react';
@@ -8,6 +9,7 @@ import toast from 'react-hot-toast';
 
 const TableManagement = () => {
   const { user } = useAuth();
+  const { selectedOutlet } = useOutlet();
   const [viewMode, setViewMode] = useState('list'); // 'list' | 'floor-plan'
   const [tables, setTables] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -22,7 +24,8 @@ const TableManagement = () => {
     shape: 'rect-table',
   });
 
-  const outletId = user?.defaultOutletId || user?.outletId;
+  // For admin: use selected outlet from context, for manager: use their assigned outlet
+  const outletId = user?.role === 'SUPER_ADMIN' ? selectedOutlet?._id : user?.defaultOutletId || user?.outletId;
 
   /* eslint-disable react-hooks/exhaustive-deps */
   useEffect(() => {

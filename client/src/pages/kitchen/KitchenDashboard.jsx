@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../../context/AuthContextValues';
+import { useOutlet } from '../../context/OutletContextValues';
 import api from '../../lib/axios';
 import { ChefHat, Flame, CheckCircle, Clock, RefreshCw, AlertTriangle } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -78,11 +79,12 @@ const KitchenOrderCard = ({ order, onStatusUpdate }) => {
 
 const KitchenDashboard = () => {
   const { user } = useAuth();
+  const { selectedOutlet } = useOutlet();
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Kitchen mainly cares about default outlet
-  const outletId = user?.defaultOutletId || user?.outletId;
+  // For admin: use selected outlet from context, for staff: use their assigned outlet
+  const outletId = user?.role === 'SUPER_ADMIN' ? selectedOutlet?._id : user?.defaultOutletId || user?.outletId;
 
   const fetchOrders = useCallback(async () => {
     if (!outletId) return;

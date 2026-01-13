@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../../context/AuthContextValues';
+import { useOutlet } from '../../context/OutletContextValues';
 import api from '../../lib/axios';
 import { Clock, CheckCircle, Package, ChefHat, AlertCircle, RefreshCw } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -87,11 +88,13 @@ const OrderCard = ({ order, onStatusUpdate }) => {
 
 const LiveOrders = () => {
   const { user } = useAuth();
+  const { selectedOutlet } = useOutlet();
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [lastUpdated, setLastUpdated] = useState(new Date());
 
-  const outletId = user?.defaultOutletId || user?.outletId;
+  // For admin: use selected outlet from context, for manager: use their assigned outlet
+  const outletId = user?.role === 'SUPER_ADMIN' ? selectedOutlet?._id : user?.defaultOutletId || user?.outletId;
 
   const fetchOrders = useCallback(async () => {
     if (!outletId) return;

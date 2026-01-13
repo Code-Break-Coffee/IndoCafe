@@ -175,7 +175,7 @@ const UserManagement = () => {
       handleCloseModal();
     } catch (err) {
       console.error('Error saving user', err);
-      alert('Failed to save user. Please try again.');
+      alert(err.response?.data?.message || 'Failed to save user. Please try again.');
     } finally {
       setSaveLoading(false);
     }
@@ -438,7 +438,7 @@ const UserManagement = () => {
                       handleCloseDelete();
                     } catch (err) {
                       console.error('Error deleting user', err);
-                      alert('Failed to delete user. Please try again.');
+                      alert(err.response?.data?.message || 'Failed to delete user. Please try again.');
                     } finally {
                       setDeleteLoading(false);
                     }

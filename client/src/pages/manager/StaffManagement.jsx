@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContextValues';
+import { useOutlet } from '../../context/OutletContextValues';
 import axios from '../../lib/axios';
 import Button from '../../components/ui/Button';
 import { Plus, Trash2, Edit, X, User, Users } from 'lucide-react';
@@ -7,8 +8,12 @@ import { Plus, Trash2, Edit, X, User, Users } from 'lucide-react';
 
 const StaffManagement = () => {
   const { user } = useAuth();
+  const { selectedOutlet } = useOutlet();
   const [staffList, setStaffList] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  // For admin: use selected outlet from context, for manager: use their assigned outlet
+  const outletId = user?.role === 'SUPER_ADMIN' ? selectedOutlet?._id : user?.defaultOutletId || user?.outletId;
 
   // UI States
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -36,9 +41,9 @@ const StaffManagement = () => {
   };
 
   const fetchStaff = React.useCallback(async () => {
-    if (!user?.defaultOutletId) return;
+    if (!outletId) return;
     try {
-      const response = await axios.get(`/api/manager/staff/${user.defaultOutletId}`);
+      const response = await axios.get(`/api/manager/staff/${outletId}`);
       setStaffList(response.data);
     } catch (err) {
       console.error('Failed to fetch staff:', err);
@@ -46,13 +51,13 @@ const StaffManagement = () => {
     } finally {
       setLoading(false);
     }
-  }, [user?.defaultOutletId]);
+  }, [outletId]);
 
   useEffect(() => {
-    if (user?.defaultOutletId) {
+    if (outletId) {
       fetchStaff();
     }
-  }, [user, fetchStaff]);
+  }, [outletId, fetchStaff]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -75,7 +80,7 @@ const StaffManagement = () => {
     try {
       await axios.post('/api/manager/staff', {
         ...formData,
-        outletId: user.defaultOutletId,
+        outletId: outletId,
       });
       setSuccess('Staff member added successfully!');
       setFormData({

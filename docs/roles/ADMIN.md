@@ -22,7 +22,7 @@ The Business Owner or System Administrator. They do not cook food or serve table
 | **Analytics Dashboard**    | Aggregated view of total sales, top performing outlets.             | ❌ **To Do**       |
 | **Audit Logs**             | View system-wide critical actions (e.g., who deleted a menu item).  | ❌ **To Do**       |
 | **Billing & Subscription** | Manage SaaS payments for the platform usage.                        | ❌ **To Do**       |
-| **Users**                  | Add and remove Users, edit them, filter role and outlet wise        | ⚠️ **In Progress** |
+| **Users**                  | Add and remove Users, edit them, filter role and outlet wise        | ✅ **Done**        |
 
 ## 🔄 Daily Workflow
 

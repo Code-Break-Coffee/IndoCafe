@@ -102,7 +102,7 @@ const GlobalMenu = () => {
       fetchItems();
     } catch (err) {
       console.error('Failed to create item:', err);
-      alert('Failed to create item. Please try again.');
+      alert(err.response?.data?.message || 'Failed to create item.');
     } finally {
       setImageUploading(false);
     }
