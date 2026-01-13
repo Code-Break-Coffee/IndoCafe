@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../../context/AuthContextValues';
+import { useOutlet } from '../../context/OutletContextValues';
 import api from '../../lib/axios';
 import { UtensilsCrossed, CheckCircle, Clock, MapPin, RefreshCw } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -60,11 +61,13 @@ const ActiveTableCard = ({ table }) => (
 
 const WaiterDashboard = () => {
   const { user } = useAuth();
+  const { selectedOutlet } = useOutlet();
   const [readyOrders, setReadyOrders] = useState([]);
   const [occupiedTables, setOccupiedTables] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const outletId = user?.defaultOutletId || user?.outletId;
+  // For admin: use selected outlet from context, for staff: use their assigned outlet
+  const outletId = user?.role === 'SUPER_ADMIN' ? selectedOutlet?._id : user?.defaultOutletId || user?.outletId;
 
   const fetchData = useCallback(async () => {
     if (!outletId) return;

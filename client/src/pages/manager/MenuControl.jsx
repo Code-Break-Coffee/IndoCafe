@@ -68,7 +68,7 @@ const MenuControl = () => {
       console.error('Failed to update status:', err);
       // Revert on error
       setItems((prev) => prev.map((i) => (i._id === item._id ? { ...i, isAvailable: !item.isAvailable } : i)));
-      alert('Failed to update status.');
+      alert(err.response?.data?.message || 'Failed to update status.');
     } finally {
       setUpdatingId(null);
     }
@@ -107,7 +107,7 @@ const MenuControl = () => {
     } catch (err) {
       console.error('Failed to update price:', err);
       // Revert is harder here without fetching, but we can just alert
-      alert('Failed to update price.');
+      alert(err.response?.data?.message || 'Failed to update price.');
       fetchMenu(selectedOutletId); // Refresh to be safe
     } finally {
       setUpdatingId(null);
