@@ -56,7 +56,7 @@ const AdminLayout = () => {
             className={`flex items-center px-4 py-3 rounded-lg transition-colors ${isActive('/admin/users')}`}
           >
             <Users className="h-5 w-5 mr-3" />
-            Users
+            Staff
           </Link>
           <Link
             to="/admin/analytics"

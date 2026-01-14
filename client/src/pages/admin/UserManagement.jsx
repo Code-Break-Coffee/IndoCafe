@@ -20,6 +20,7 @@ const UserManagement = () => {
     phoneNumber: '',
     defaultOutletId: '',
     password: '',
+    shiftStartTime: '',
   });
 
   const roleOptions = [
@@ -34,6 +35,7 @@ const UserManagement = () => {
   ];
 
   const operationalRoles = new Set(['OUTLET_MANAGER', 'CASHIER', 'WAITER', 'KITCHEN', 'DISPATCHER', 'RIDER']);
+  const staffRoles = new Set(['CASHIER', 'WAITER', 'KITCHEN', 'DISPATCHER', 'RIDER']);
 
   const fetchUsers = useCallback(async () => {
     try {
@@ -90,6 +92,7 @@ const UserManagement = () => {
       phoneNumber: user.phoneNumber || '',
       defaultOutletId: user.defaultOutletId?._id || '',
       password: '',
+      shiftStartTime: '',
     });
     setIsModalOpen(true);
   };
@@ -103,6 +106,7 @@ const UserManagement = () => {
       phoneNumber: '',
       defaultOutletId: '',
       password: '',
+      shiftStartTime: '',
     });
     setIsModalOpen(true);
   };
@@ -117,6 +121,7 @@ const UserManagement = () => {
       phoneNumber: '',
       defaultOutletId: '',
       password: '',
+      shiftStartTime: '',
     });
   };
 
@@ -150,6 +155,11 @@ const UserManagement = () => {
       return;
     }
 
+    if (staffRoles.has(formData.role) && !formData.shiftStartTime) {
+      alert('Please provide shift start time for staff roles');
+      return;
+    }
+
     try {
       setSaveLoading(true);
       if (isEdit) {
@@ -161,14 +171,27 @@ const UserManagement = () => {
           outletId: formData.defaultOutletId || null,
         });
       } else {
-        await api.post('/api/admin/users', {
-          name: formData.name,
-          email: formData.email,
-          role: formData.role,
-          phoneNumber: formData.phoneNumber,
-          password: formData.password,
-          outletId: formData.defaultOutletId || null,
-        });
+        // Use staff API for staff roles, admin API for admin/manager roles
+        if (staffRoles.has(formData.role)) {
+          await api.post('/api/manager/staff', {
+            name: formData.name,
+            email: formData.email,
+            password: formData.password,
+            role: formData.role,
+            phoneNumber: formData.phoneNumber,
+            outletId: formData.defaultOutletId,
+            shiftStartTime: formData.shiftStartTime,
+          });
+        } else {
+          await api.post('/api/admin/users', {
+            name: formData.name,
+            email: formData.email,
+            role: formData.role,
+            phoneNumber: formData.phoneNumber,
+            password: formData.password,
+            outletId: formData.defaultOutletId || null,
+          });
+        }
       }
 
       await fetchUsers();
@@ -192,8 +215,8 @@ const UserManagement = () => {
     <div className="p-6 bg-background min-h-screen text-text">
       <div className="flex justify-between items-center mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-primary">User Management</h1>
-          <p className="text-secondary">Manage all users.</p>
+          <h1 className="text-2xl font-bold text-primary">Staff Management</h1>
+          <p className="text-secondary">Manage all staff members.</p>
         </div>
         <div className="flex gap-3">
           <button
@@ -201,7 +224,7 @@ const UserManagement = () => {
             className="flex items-center gap-2 px-4 py-2 bg-primary text-on-primary rounded-lg hover:opacity-90 transition-colors"
           >
             <Plus size={20} />
-            Add User
+            Add Staff
           </button>
         </div>
       </div>
@@ -218,7 +241,7 @@ const UserManagement = () => {
               : 'bg-surface text-text border border-secondary/20 hover:bg-background'
           }`}
         >
-          All Users
+          All Staff
         </button>
         <button
           onClick={() => handleRoleFilter('SUPER_ADMIN')}
@@ -240,11 +263,61 @@ const UserManagement = () => {
         >
           Outlet Manager
         </button>
+        <button
+          onClick={() => handleRoleFilter('WAITER')}
+          className={`px-4 py-2 rounded-lg transition-colors hover:cursor-pointer ${
+            selectedRole === 'WAITER'
+              ? 'bg-primary text-on-primary'
+              : 'bg-surface text-text border border-secondary/20 hover:bg-background'
+          }`}
+        >
+          Waiter
+        </button>
+        <button
+          onClick={() => handleRoleFilter('RIDER')}
+          className={`px-4 py-2 rounded-lg transition-colors hover:cursor-pointer ${
+            selectedRole === 'RIDER'
+              ? 'bg-primary text-on-primary'
+              : 'bg-surface text-text border border-secondary/20 hover:bg-background'
+          }`}
+        >
+          Rider
+        </button>
+        <button
+          onClick={() => handleRoleFilter('CASHIER')}
+          className={`px-4 py-2 rounded-lg transition-colors hover:cursor-pointer ${
+            selectedRole === 'CASHIER'
+              ? 'bg-primary text-on-primary'
+              : 'bg-surface text-text border border-secondary/20 hover:bg-background'
+          }`}
+        >
+          Cashier
+        </button>
+        <button
+          onClick={() => handleRoleFilter('KITCHEN')}
+          className={`px-4 py-2 rounded-lg transition-colors hover:cursor-pointer ${
+            selectedRole === 'KITCHEN'
+              ? 'bg-primary text-on-primary'
+              : 'bg-surface text-text border border-secondary/20 hover:bg-background'
+          }`}
+        >
+          Kitchen
+        </button>
+        <button
+          onClick={() => handleRoleFilter('DISPATCHER')}
+          className={`px-4 py-2 rounded-lg transition-colors hover:cursor-pointer ${
+            selectedRole === 'DISPATCHER'
+              ? 'bg-primary text-on-primary'
+              : 'bg-surface text-text border border-secondary/20 hover:bg-background'
+          }`}
+        >
+          Dispatcher
+        </button>
       </div>
 
       <div className="space-y-8">
         <div className="bg-surface p-6 rounded-xl shadow-sm border border-secondary/10">
-          <h2 className="text-xl font-semibold mb-4 text-primary border-b border-secondary/10 pb-2">Users</h2>
+          <h2 className="text-xl font-semibold mb-4 text-primary border-b border-secondary/10 pb-2">Staff</h2>
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
@@ -290,7 +363,7 @@ const UserManagement = () => {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
           <div className="bg-surface rounded-xl shadow-xl w-full max-w-md overflow-hidden">
             <div className="p-6 border-b border-secondary/10">
-              <h2 className="text-xl font-bold text-primary">{editingUser ? 'Edit User' : 'Add User'}</h2>
+              <h2 className="text-xl font-bold text-primary">{editingUser ? 'Edit Staff' : 'Add Staff'}</h2>
             </div>
             <form onSubmit={handleSubmit} className="p-6 space-y-4">
               <div>
@@ -386,6 +459,20 @@ const UserManagement = () => {
                 </div>
               )}
 
+              {staffRoles.has(formData.role) && (
+                <div>
+                  <label className="block text-sm font-medium text-secondary mb-1">Shift Start Time</label>
+                  <input
+                    type="time"
+                    name="shiftStartTime"
+                    value={formData.shiftStartTime}
+                    onChange={handleInputChange}
+                    required
+                    className="w-full px-3 py-2 rounded-lg border border-secondary/20 focus:outline-none focus:ring-2 focus:ring-primary/50 bg-background"
+                  />
+                </div>
+              )}
+
               <div className="flex justify-end gap-3 mt-6">
                 <button
                   type="button"
@@ -411,7 +498,7 @@ const UserManagement = () => {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
           <div className="bg-surface rounded-xl shadow-xl w-full max-w-md overflow-hidden">
             <div className="p-6 border-b border-secondary/10">
-              <h2 className="text-xl font-bold text-primary">Delete User</h2>
+              <h2 className="text-xl font-bold text-primary">Delete Staff</h2>
             </div>
             <div className="p-6 space-y-4">
               <p className="text-secondary">

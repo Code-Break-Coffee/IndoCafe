@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { menuService } from '../../services/menuService';
 import { useAuth } from '../../context/AuthContextValues';
-import { Edit2, Check, X, Loader, Image as ImageIcon, ChevronDown } from 'lucide-react';
+import api from '../../lib/axios';
+import { Edit2, Check, X, Loader, Image as ImageIcon, ChevronDown, AlertCircle } from 'lucide-react';
 
 const MenuControl = () => {
   const { user } = useAuth();
@@ -11,6 +12,8 @@ const MenuControl = () => {
   const [editingPriceId, setEditingPriceId] = useState(null);
   const [tempPrice, setTempPrice] = useState('');
   const [updatingId, setUpdatingId] = useState(null);
+  const [successMessage, setSuccessMessage] = useState('');
+  const [priceRequestError, setPriceRequestError] = useState('');
 
   // State for selected outlet
   const [selectedOutletId, setSelectedOutletId] = useState(user?.defaultOutletId || user?.outletId);
@@ -87,6 +90,9 @@ const MenuControl = () => {
   const savePrice = async (item) => {
     try {
       setUpdatingId(item._id);
+      setPriceRequestError('');
+      setSuccessMessage('');
+
       const newPrice = parseFloat(tempPrice);
 
       if (isNaN(newPrice) || newPrice < 0) {
@@ -94,21 +100,28 @@ const MenuControl = () => {
         return;
       }
 
-      // Optimistic update
-      setItems((prev) => prev.map((i) => (i._id === item._id ? { ...i, price: newPrice } : i)));
-
-      await menuService.updateItemStatus(item._id, {
-        isAvailable: item.isAvailable,
-        price: newPrice,
-        outletId: selectedOutletId, // Pass selected outlet ID
+      // Create price change request instead of updating directly
+      const response = await api.post('/api/manager/price-requests', {
+        menuItemId: item._id,
+        proposedPrice: newPrice,
+        outletId: selectedOutletId,
       });
 
-      setEditingPriceId(null);
+      if (response.data.success) {
+        setSuccessMessage(
+          `Price change request sent for "${item.name}" (₹${item.price} → ₹${newPrice}). Awaiting admin approval.`
+        );
+        setEditingPriceId(null);
+        setTempPrice('');
+
+        // Clear success message after 4 seconds
+        setTimeout(() => setSuccessMessage(''), 4000);
+      }
     } catch (err) {
-      console.error('Failed to update price:', err);
-      // Revert is harder here without fetching, but we can just alert
-      alert(err.response?.data?.message || 'Failed to update price.');
-      fetchMenu(selectedOutletId); // Refresh to be safe
+      console.error('Failed to create price change request:', err);
+      const errorMsg = err.response?.data?.message || 'Failed to create price change request.';
+      setPriceRequestError(errorMsg);
+      alert(errorMsg);
     } finally {
       setUpdatingId(null);
     }
@@ -138,6 +151,28 @@ const MenuControl = () => {
 
   return (
     <div className="p-4 md:p-6 bg-background min-h-screen text-text">
+      {/* Success Message */}
+      {successMessage && (
+        <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg flex items-start gap-3">
+          <AlertCircle className="text-green-600 mt-0.5 flex-shrink-0" size={20} />
+          <div>
+            <p className="text-green-800 font-medium">Request Sent</p>
+            <p className="text-green-700 text-sm">{successMessage}</p>
+          </div>
+        </div>
+      )}
+
+      {/* Error Message */}
+      {priceRequestError && (
+        <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-start gap-3">
+          <AlertCircle className="text-red-600 mt-0.5 flex-shrink-0" size={20} />
+          <div>
+            <p className="text-red-800 font-medium">Error</p>
+            <p className="text-red-700 text-sm">{priceRequestError}</p>
+          </div>
+        </div>
+      )}
+
       <div className="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
         <div>
           <h1 className="text-2xl font-bold text-primary">Outlet Menu Control</h1>

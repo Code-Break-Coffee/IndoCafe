@@ -13,7 +13,7 @@ const OutletManagement = () => {
   const { setOutlet } = useOutlet();
   const [outlets, setOutlets] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('outlets'); // 'outlets' or 'managers'
+  const [activeTab, _setActiveTab] = useState('outlets'); // 'outlets' or 'managers'
   const [viewingOutlet, setViewingOutlet] = useState(null);
   const [viewMode, setViewMode] = useState('orders');
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -144,27 +144,13 @@ const OutletManagement = () => {
     );
 
   return (
-    <div className="space-y-6">
-      {/* Tabs */}
-      <div className="flex space-x-4 border-b border-secondary/10">
-        <button
-          onClick={() => setActiveTab('outlets')}
-          className={`pb-2 px-4 font-medium text-sm transition-colors ${
-            activeTab === 'outlets' ? 'border-b-2 border-primary text-primary' : 'text-secondary hover:text-text'
-          }`}
-        >
-          Manage Outlets
-        </button>
-        <button
-          onClick={() => setActiveTab('managers')}
-          className={`pb-2 px-4 font-medium text-sm transition-colors ${
-            activeTab === 'managers' ? 'border-b-2 border-primary text-primary' : 'text-secondary hover:text-text'
-          }`}
-        >
-          Add Managers
-        </button>
+    <div className="p-6 bg-background min-h-screen text-text">
+      <div className="flex justify-between items-center mb-8">
+        <div>
+          <h1 className="text-2xl font-bold text-primary">Outlet Management</h1>
+          <p className="text-secondary">Manage all outlets and view them.</p>
+        </div>
       </div>
-
       {/* Message Alert */}
       {message.text && (
         <div
