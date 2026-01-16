@@ -12,11 +12,28 @@ export const CartProvider = ({ children }) => {
     }
   });
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [tableInfo, setTableInfo] = useState(() => {
+    try {
+      const savedTable = localStorage.getItem('tableInfo');
+      return savedTable ? JSON.parse(savedTable) : null;
+    } catch {
+      return null;
+    }
+  });
 
   // Save cart to local storage whenever it changes
   useEffect(() => {
     localStorage.setItem('cartItems', JSON.stringify(cartItems));
   }, [cartItems]);
+
+  // Save table info to local storage whenever it changes
+  useEffect(() => {
+    if (tableInfo) {
+      localStorage.setItem('tableInfo', JSON.stringify(tableInfo));
+    } else {
+      localStorage.removeItem('tableInfo');
+    }
+  }, [tableInfo]);
 
   const addToCart = (item, quantity = 1, modifiers = []) => {
     setCartItems((prevItems) => {
@@ -60,6 +77,10 @@ export const CartProvider = ({ children }) => {
     setCartItems([]);
   };
 
+  const clearTableInfo = () => {
+    setTableInfo(null);
+  };
+
   const cartTotal = cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
   const cartCount = cartItems.reduce((count, item) => count + item.quantity, 0);
 
@@ -73,6 +94,9 @@ export const CartProvider = ({ children }) => {
     cartCount,
     isCartOpen,
     setIsCartOpen,
+    tableInfo,
+    setTableInfo,
+    clearTableInfo,
   };
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;

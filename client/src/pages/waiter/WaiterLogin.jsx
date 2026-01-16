@@ -2,9 +2,9 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContextValues';
 import { useTheme } from '../../context/ThemeContext';
-import { Lock, Mail, Loader2, Sun, Moon } from 'lucide-react';
+import { Lock, Mail, Loader2, Sun, Moon, Users } from 'lucide-react';
 
-const Login = () => {
+const WaiterLogin = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -22,23 +22,13 @@ const Login = () => {
     const result = await login(email, password);
 
     if (result.success) {
-      // Redirect based on role
       const userRole = result.user?.role;
 
-      if (userRole === 'SUPER_ADMIN') {
-        navigate('/admin/overview', { replace: true });
-      } else if (userRole === 'OUTLET_MANAGER') {
-        navigate('/manager/live-orders', { replace: true });
-      } else if (userRole === 'KITCHEN') {
-        navigate('/kitchen', { replace: true });
-      } else if (userRole === 'WAITER') {
+      if (userRole === 'WAITER') {
         navigate('/waiter', { replace: true });
-      } else if (['CASHIER', 'DISPATCHER', 'RIDER'].includes(userRole)) {
-        // For other staff roles, redirect to their respective dashboards
-        navigate(`/${userRole.toLowerCase()}`, { replace: true });
       } else {
-        // Default fallback
-        navigate('/', { replace: true });
+        setError('Invalid role. Waiter staff login required.');
+        setIsSubmitting(false);
       }
     } else {
       setError(result.message);
@@ -57,9 +47,12 @@ const Login = () => {
       </button>
 
       <div className="max-w-md w-full bg-surface rounded-xl shadow-lg overflow-hidden border border-secondary/10">
-        <div className="bg-primary p-6 text-center">
-          <h2 className="text-3xl font-bold text-on-primary">IndoCafe</h2>
-          <p className="text-on-primary/80 mt-2">Login to Your Account</p>
+        <div className="bg-blue-600 p-6 text-center">
+          <div className="flex justify-center mb-2">
+            <Users className="h-8 w-8 text-white" />
+          </div>
+          <h2 className="text-3xl font-bold text-white">Waiter</h2>
+          <p className="text-white/80 mt-2">Staff Login</p>
         </div>
 
         <div className="p-8">
@@ -78,7 +71,7 @@ const Login = () => {
                   type="email"
                   required
                   className="block w-full pl-10 pr-3 py-2 bg-background border border-secondary/20 rounded-lg text-text focus:ring-primary focus:border-primary transition-colors placeholder-secondary/50"
-                  placeholder="admin@indocafe.com"
+                  placeholder="waiter@indocafe.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                 />
@@ -105,26 +98,28 @@ const Login = () => {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-on-primary bg-primary hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-70 disabled:cursor-not-allowed transition-colors"
+              className="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white py-2 rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
             >
               {isSubmitting ? (
                 <>
-                  <Loader2 className="animate-spin -ml-1 mr-2 h-4 w-4" />
-                  Signing in...
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Logging in...
                 </>
               ) : (
-                'Sign In'
+                'Login'
               )}
             </button>
           </form>
-        </div>
 
-        <div className="px-8 py-4 bg-gray-50 border-t border-gray-100 text-center">
-          <p className="text-xs text-gray-500">&copy; {new Date().getFullYear()} IndoCafe Restaurant System</p>
+          <p className="text-center text-secondary text-sm mt-6">
+            <a href="/login" className="text-primary hover:underline">
+              Back to main login
+            </a>
+          </p>
         </div>
       </div>
     </div>
   );
 };
 
-export default Login;
+export default WaiterLogin;

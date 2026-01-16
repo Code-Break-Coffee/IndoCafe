@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import FloorPlanEditor from '../../components/floorplan/FloorPlanEditor';
+import TableReservationUI from '../../components/waiter/TableReservationUI';
 import { useAuth } from '../../context/AuthContextValues';
 import { useOutlet } from '../../context/OutletContextValues';
 import api from '../../lib/axios';
@@ -11,6 +12,7 @@ const TableManagement = () => {
   const { user } = useAuth();
   const { selectedOutlet } = useOutlet();
   const [viewMode, setViewMode] = useState('list'); // 'list' | 'floor-plan'
+  const [activeTab, setActiveTab] = useState('tables'); // 'tables' | 'reservations'
   const [tables, setTables] = useState([]);
   const [loading, setLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -87,6 +89,19 @@ const TableManagement = () => {
     } catch (error) {
       console.error('Error deleting table:', error);
       toast.error('Failed to delete table');
+    }
+  };
+
+  const handleReleaseAfterBilling = async (id) => {
+    try {
+      const res = await api.post(`/api/waiter/tables/${id}/release`);
+      if (res.data.success) {
+        toast.success('Table marked available');
+        fetchTables();
+      }
+    } catch (error) {
+      console.error('Error releasing table:', error);
+      toast.error('Failed to mark available');
     }
   };
 
@@ -173,85 +188,167 @@ const TableManagement = () => {
         </div>
       </div>
 
+      {/* Occupied tables quick actions */}
+      <div className="px-6 py-4 bg-white dark:bg-gray-800 border-b dark:border-gray-700 shadow-sm">
+        <h2 className="text-lg font-bold text-gray-800 dark:text-gray-100 mb-3">Occupied Tables</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+          {tables.length === 0 && (
+            <div className="col-span-full text-gray-500 dark:text-gray-400 text-sm">No tables yet.</div>
+          )}
+          {tables.map((table) => (
+            <div
+              key={table._id}
+              className="p-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/40 flex items-center justify-between"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">
+                  {table.label}
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-gray-800 dark:text-gray-100">Floor {table.floor}</p>
+                  <p className="text-xs text-gray-500">{table.capacity} seats</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <span
+                  className={`text-xs font-bold px-2 py-1 rounded-full ${
+                    table.isOccupied
+                      ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-200'
+                      : 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-200'
+                  }`}
+                >
+                  {table.isOccupied ? 'Occupied' : 'Available'}
+                </span>
+                <button
+                  onClick={() => handleReleaseAfterBilling(table._id)}
+                  disabled={!table.isOccupied}
+                  className={`px-3 py-1 text-xs font-semibold rounded-lg border ${
+                    table.isOccupied
+                      ? 'border-red-500 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20'
+                      : 'border-gray-300 text-gray-400 cursor-not-allowed'
+                  }`}
+                >
+                  Mark Available
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Tab Navigation */}
+      <div className="bg-white dark:bg-gray-800 border-b dark:border-gray-700 px-6 py-0 flex gap-8 shadow-sm sticky top-0 z-5">
+        <button
+          onClick={() => setActiveTab('tables')}
+          className={`py-4 px-2 font-semibold transition-colors border-b-2 ${
+            activeTab === 'tables'
+              ? 'border-primary text-primary'
+              : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+          }`}
+        >
+          Tables ({tables.length})
+        </button>
+        <button
+          onClick={() => setActiveTab('reservations')}
+          className={`py-4 px-2 font-semibold transition-colors border-b-2 ${
+            activeTab === 'reservations'
+              ? 'border-primary text-primary'
+              : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+          }`}
+        >
+          Reservations
+        </button>
+      </div>
+
       {/* Content */}
       <div className="flex-1 overflow-hidden relative">
-        {viewMode === 'list' && (
-          <div className="p-6 overflow-y-auto h-full">
-            {loading ? (
-              <div className="flex flex-col items-center justify-center h-64 text-gray-500 dark:text-gray-400">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mb-2"></div>
-                <p>Loading tables...</p>
-              </div>
-            ) : tables.length === 0 ? (
-              <div className="flex flex-col items-center justify-center h-64 text-gray-500 dark:text-gray-400">
-                <p>No tables found. Add a table to get started.</p>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                {filteredTables.map((table) => (
-                  <div
-                    key={table._id}
-                    className="bg-white dark:bg-gray-800 p-4 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-all"
-                  >
-                    <div className="flex justify-between items-start mb-3">
-                      <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">
-                        {table.label}
-                      </div>
-                      <div className="flex gap-1">
-                        <button
-                          onClick={() => openModal(table)}
-                          className="p-1.5 text-gray-500 dark:text-gray-400 hover:text-primary dark:hover:text-primary hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
-                        >
-                          <Edit2 size={16} />
-                        </button>
-                        <button
-                          onClick={() => handleDelete(table._id)}
-                          className="p-1.5 text-gray-500 dark:text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg"
-                        >
-                          <Trash2 size={16} />
-                        </button>
-                      </div>
-                    </div>
-                    <div className="space-y-1 text-sm">
-                      <p className="text-gray-600 dark:text-gray-300">
-                        <span className="font-medium text-gray-800 dark:text-white">Capacity:</span> {table.capacity}{' '}
-                        Persons
-                      </p>
-                      <p className="text-gray-600 dark:text-gray-300">
-                        <span className="font-medium text-gray-800 dark:text-white">Shape:</span>{' '}
-                        {table.shape.replace('-table', '')}
-                      </p>
-                      <p className="text-gray-600 dark:text-gray-300">
-                        <span className="font-medium text-gray-800 dark:text-white">Status:</span>
-                        <span
-                          className={`ml-2 inline-block w-2 h-2 rounded-full ${table.isOccupied ? 'bg-red-500' : 'bg-green-500'}`}
-                        ></span>
-                        {table.isOccupied ? ' Occupied' : ' Available'}
-                      </p>
-                    </div>
+        {activeTab === 'tables' && (
+          <>
+            {viewMode === 'list' && (
+              <div className="p-6 overflow-y-auto h-full">
+                {loading ? (
+                  <div className="flex flex-col items-center justify-center h-64 text-gray-500 dark:text-gray-400">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mb-2"></div>
+                    <p>Loading tables...</p>
                   </div>
-                ))}
-                {filteredTables.length === 0 && (
-                  <div className="col-span-full py-10 text-center text-gray-500 dark:text-gray-400">
-                    No tables on this floor.
+                ) : tables.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center h-64 text-gray-500 dark:text-gray-400">
+                    <p>No tables found. Add a table to get started.</p>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                    {filteredTables.map((table) => (
+                      <div
+                        key={table._id}
+                        className="bg-white dark:bg-gray-800 p-4 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-all"
+                      >
+                        <div className="flex justify-between items-start mb-3">
+                          <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">
+                            {table.label}
+                          </div>
+                          <div className="flex gap-1">
+                            <button
+                              onClick={() => openModal(table)}
+                              className="p-1.5 text-gray-500 dark:text-gray-400 hover:text-primary dark:hover:text-primary hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg"
+                            >
+                              <Edit2 size={16} />
+                            </button>
+                            <button
+                              onClick={() => handleDelete(table._id)}
+                              className="p-1.5 text-gray-500 dark:text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg"
+                            >
+                              <Trash2 size={16} />
+                            </button>
+                          </div>
+                        </div>
+                        <div className="space-y-1 text-sm">
+                          <p className="text-gray-600 dark:text-gray-300">
+                            <span className="font-medium text-gray-800 dark:text-white">Capacity:</span>{' '}
+                            {table.capacity} Persons
+                          </p>
+                          <p className="text-gray-600 dark:text-gray-300">
+                            <span className="font-medium text-gray-800 dark:text-white">Shape:</span>{' '}
+                            {table.shape.replace('-table', '')}
+                          </p>
+                          <p className="text-gray-600 dark:text-gray-300">
+                            <span className="font-medium text-gray-800 dark:text-white">Status:</span>
+                            <span
+                              className={`ml-2 inline-block w-2 h-2 rounded-full ${table.isOccupied ? 'bg-red-500' : 'bg-green-500'}`}
+                            ></span>
+                            {table.isOccupied ? ' Occupied' : ' Available'}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                    {filteredTables.length === 0 && (
+                      <div className="col-span-full py-10 text-center text-gray-500 dark:text-gray-400">
+                        No tables on this floor.
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
             )}
-          </div>
+
+            {viewMode === 'floor-plan' && (
+              <FloorPlanEditor
+                tables={filteredTables}
+                allTables={tables}
+                floor={selectedFloor}
+                onUpdate={() => {
+                  // Update local state to reflect dragged changes immediately (optional, for smooth UX)
+                  // The actual save will happen inside FloorPlanEditor via API, then it might reload tables
+                  fetchTables();
+                }}
+              />
+            )}
+          </>
         )}
 
-        {viewMode === 'floor-plan' && (
-          <FloorPlanEditor
-            tables={filteredTables}
-            allTables={tables}
-            floor={selectedFloor}
-            onUpdate={() => {
-              // Update local state to reflect dragged changes immediately (optional, for smooth UX)
-              // The actual save will happen inside FloorPlanEditor via API, then it might reload tables
-              fetchTables();
-            }}
-          />
+        {activeTab === 'reservations' && (
+          <div className="p-6 overflow-y-auto h-full">
+            <TableReservationUI tables={tables} onTableReserved={fetchTables} onTableReleased={fetchTables} />
+          </div>
         )}
       </div>
 

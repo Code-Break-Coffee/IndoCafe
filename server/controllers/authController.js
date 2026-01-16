@@ -14,7 +14,8 @@ const generateToken = (id, role, outletId) => {
 // @access  Public
 export const register = async (req, res) => {
   try {
-    const { name, email, password, role, phoneNumber, outletId, adminSecret } = req.body;
+    const { name, email, password, role, phoneNumber, outletId, adminSecret } =
+      req.body;
 
     // Check if user exists
     const userExists = await User.findOne({ email });
@@ -42,15 +43,21 @@ export const register = async (req, res) => {
     });
 
     if (user) {
-      sendResponse(res, 201, {
-        _id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-        defaultOutletId: user.defaultOutletId,
-        assignedOutlets: user.assignedOutlets,
-        token: generateToken(user._id, user.role, user.defaultOutletId),
-      }, 'User registered successfully', true);
+      sendResponse(
+        res,
+        201,
+        {
+          _id: user._id,
+          name: user.name,
+          email: user.email,
+          role: user.role,
+          defaultOutletId: user.defaultOutletId,
+          assignedOutlets: user.assignedOutlets,
+          token: generateToken(user._id, user.role, user.defaultOutletId),
+        },
+        'User registered successfully',
+        true
+      );
     } else {
       sendResponse(res, 400, null, 'Invalid user data', false);
     }
@@ -68,18 +75,27 @@ export const login = async (req, res) => {
     const { email, password } = req.body;
 
     // Check for user email
-    const user = await User.findOne({ email }).populate('assignedOutlets', 'name _id');
+    const user = await User.findOne({ email }).populate(
+      'assignedOutlets',
+      'name _id'
+    );
 
     if (user && (await user.matchPassword(password))) {
-      sendResponse(res, 200, {
-        _id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-        defaultOutletId: user.defaultOutletId,
-        assignedOutlets: user.assignedOutlets,
-        token: generateToken(user._id, user.role, user.defaultOutletId),
-      }, 'Login successful', true);
+      sendResponse(
+        res,
+        200,
+        {
+          _id: user._id,
+          name: user.name,
+          email: user.email,
+          role: user.role,
+          defaultOutletId: user.defaultOutletId,
+          assignedOutlets: user.assignedOutlets,
+          token: generateToken(user._id, user.role, user.defaultOutletId),
+        },
+        'Login successful',
+        true
+      );
     } else {
       sendResponse(res, 401, null, 'Invalid credentials', false);
     }
@@ -101,9 +117,9 @@ export const getMe = async (req, res) => {
       role: req.user.role,
       defaultOutletId: req.user.defaultOutletId,
       assignedOutlets: req.user.assignedOutlets,
-      phoneNumber: req.user.phoneNumber
+      phoneNumber: req.user.phoneNumber,
     };
-    
+
     sendResponse(res, 200, user, 'User data retrieved', true);
   } catch (error) {
     console.error(error);

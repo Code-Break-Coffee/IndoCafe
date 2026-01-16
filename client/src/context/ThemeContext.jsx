@@ -1,9 +1,6 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { brandConfig } from '../config/brandConfig';
-
-const ThemeContext = createContext();
-
-export const useTheme = () => useContext(ThemeContext);
+import { ThemeContext } from './useTheme';
 
 export const ThemeProvider = ({ children }) => {
   const [isDarkMode, setIsDarkMode] = useState(() => {
@@ -34,11 +31,7 @@ export const ThemeProvider = ({ children }) => {
     localStorage.setItem('darkMode', JSON.stringify(isDarkMode));
   }, [isDarkMode]);
 
-  const toggleTheme = () => setIsDarkMode(prev => !prev);
+  const toggleTheme = () => setIsDarkMode((prev) => !prev);
 
-  return (
-    <ThemeContext.Provider value={{ isDarkMode, toggleTheme, brandConfig }}>
-      {children}
-    </ThemeContext.Provider>
-  );
+  return <ThemeContext.Provider value={{ isDarkMode, toggleTheme, brandConfig }}>{children}</ThemeContext.Provider>;
 };

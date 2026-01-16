@@ -7,15 +7,21 @@ import { sendResponse } from '../utils/responseHandler.js';
 export const authorize = (...allowedRoles) => {
   return (req, res, next) => {
     if (!req.user) {
-      return sendResponse(res, 401, null, 'Not authorized, user not found', false);
+      return sendResponse(
+        res,
+        401,
+        null,
+        'Not authorized, user not found',
+        false
+      );
     }
 
     if (!allowedRoles.includes(req.user.role)) {
       return sendResponse(
-        res, 
-        403, 
-        null, 
-        `User role '${req.user.role}' is not authorized to access this route`, 
+        res,
+        403,
+        null,
+        `User role '${req.user.role}' is not authorized to access this route`,
         false
       );
     }
