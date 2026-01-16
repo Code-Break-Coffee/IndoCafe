@@ -10,10 +10,10 @@ import icon from 'leaflet/dist/images/marker-icon.png';
 import iconShadow from 'leaflet/dist/images/marker-shadow.png';
 
 let DefaultIcon = L.icon({
-    iconUrl: icon,
-    shadowUrl: iconShadow,
-    iconSize: [25, 41],
-    iconAnchor: [12, 41]
+  iconUrl: icon,
+  shadowUrl: iconShadow,
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
 });
 
 L.Marker.prototype.options.icon = DefaultIcon;
@@ -21,9 +21,9 @@ L.Marker.prototype.options.icon = DefaultIcon;
 // Component to handle search control
 const SearchField = () => {
   const map = useMap();
-  const provider = new OpenStreetMapProvider();
 
   useEffect(() => {
+    const provider = new OpenStreetMapProvider();
     const searchControl = new GeoSearchControl({
       provider: provider,
       style: 'bar',
@@ -33,7 +33,7 @@ const SearchField = () => {
       retainZoomLevel: false,
       animateZoom: true,
       keepResult: true,
-      searchLabel: 'Search address...'
+      searchLabel: 'Search address...',
     });
 
     map.addControl(searchControl);
@@ -69,17 +69,10 @@ const LocationMarker = ({ position, setPosition, onChange }) => {
         }
       },
     }),
-    [onChange, setPosition],
+    [onChange, setPosition]
   );
 
-  return (
-    <Marker
-      draggable={true}
-      eventHandlers={eventHandlers}
-      position={position}
-      ref={markerRef}
-    />
-  );
+  return <Marker draggable={true} eventHandlers={eventHandlers} position={position} ref={markerRef} />;
 };
 
 const LocationPicker = ({ onChange, defaultPosition = { lat: 22.7196, lng: 75.8577 } }) => {
@@ -87,22 +80,13 @@ const LocationPicker = ({ onChange, defaultPosition = { lat: 22.7196, lng: 75.85
 
   return (
     <div className="h-[350px] w-full rounded-lg overflow-hidden border border-gray-300 z-0 relative">
-      <MapContainer 
-        center={defaultPosition} 
-        zoom={13} 
-        scrollWheelZoom={true} 
-        style={{ height: '100%', width: '100%' }}
-      >
+      <MapContainer center={defaultPosition} zoom={13} scrollWheelZoom={true} style={{ height: '100%', width: '100%' }}>
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
         <SearchField />
-        <LocationMarker 
-          position={position} 
-          setPosition={setPosition} 
-          onChange={onChange} 
-        />
+        <LocationMarker position={position} setPosition={setPosition} onChange={onChange} />
       </MapContainer>
     </div>
   );

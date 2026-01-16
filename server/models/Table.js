@@ -39,6 +39,11 @@ const tableSchema = new mongoose.Schema(
       ref: 'Order',
       default: null,
     },
+    assignedWaiterId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      default: null,
+    },
   },
   {
     timestamps: true,

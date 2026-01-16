@@ -12,11 +12,11 @@ const router = express.Router();
 // Public
 router.post('/public/orders', createOrder);
 
-// Manager
+// Manager, Waiter & Kitchen
 router.get(
   '/manager/orders/:outletId',
   protect,
-  authorize('OUTLET_MANAGER', 'SUPER_ADMIN'),
+  authorize('OUTLET_MANAGER', 'SUPER_ADMIN', 'WAITER', 'KITCHEN'),
   getOutletOrders
 );
 router.put(

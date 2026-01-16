@@ -9,6 +9,8 @@ import Home from './pages/Home/Home';
 // Layouts
 import AdminLayout from './layouts/AdminLayout';
 import ManagerLayout from './layouts/ManagerLayout';
+import KitchenLayout from './layouts/KitchenLayout';
+import WaiterLayout from './layouts/WaiterLayout';
 
 // Admin Pages
 import OutletManagement from './pages/admin/OutletManagement';
@@ -43,6 +45,7 @@ function App() {
               <Routes>
                 {/* Public Routes */}
                 <Route path="/home" element={<Home />} />
+                <Route path="/:outletId/:tableId" element={<Home />} />
                 <Route path="/" element={<Navigate to="/home" replace />} />
                 <Route path="/login" element={<Login />} />
                 <Route
@@ -88,20 +91,24 @@ function App() {
                   path="/kitchen"
                   element={
                     <ProtectedRoute allowedRoles={['SUPER_ADMIN', 'OUTLET_MANAGER', 'KITCHEN']}>
-                      <KitchenDashboard />
+                      <KitchenLayout />
                     </ProtectedRoute>
                   }
-                />
+                >
+                  <Route index element={<KitchenDashboard />} />
+                </Route>
 
                 {/* Waiter Routes */}
                 <Route
                   path="/waiter"
                   element={
                     <ProtectedRoute allowedRoles={['SUPER_ADMIN', 'OUTLET_MANAGER', 'WAITER']}>
-                      <WaiterDashboard />
+                      <WaiterLayout />
                     </ProtectedRoute>
                   }
-                />
+                >
+                  <Route index element={<WaiterDashboard />} />
+                </Route>
 
                 {/* Dispatcher Routes */}
                 <Route

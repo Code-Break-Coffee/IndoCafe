@@ -20,15 +20,27 @@ const KitchenOrderCard = ({ order, onStatusUpdate }) => {
     >
       {/* Header */}
       <div className="flex justify-between items-start mb-4">
-        <div className="flex items-center gap-2">
-          <span className="bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 font-mono font-bold px-2 py-1 rounded text-lg">
-            #{order._id.slice(-4)}
-          </span>
-          {isUrgent && (
-            <span className="flex items-center gap-1 bg-red-100 text-red-600 px-2 py-1 rounded text-xs font-bold uppercase animate-pulse">
-              <AlertTriangle size={14} /> Urgent
+        <div className="flex flex-col gap-2">
+          <div className="flex items-center gap-2">
+            <span className="bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 font-mono font-bold px-2 py-1 rounded text-lg">
+              #{order._id.slice(-4)}
             </span>
-          )}
+            {order.tableId && (
+              <span className="bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 px-2 py-1 rounded text-sm font-bold">
+                Table {order.tableId?.label || 'N/A'}
+              </span>
+            )}
+            {!order.tableId && (
+              <span className="bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300 px-2 py-1 rounded text-sm font-bold">
+                Takeaway
+              </span>
+            )}
+            {isUrgent && (
+              <span className="flex items-center gap-1 bg-red-100 text-red-600 px-2 py-1 rounded text-xs font-bold uppercase animate-pulse">
+                <AlertTriangle size={14} /> Urgent
+              </span>
+            )}
+          </div>
         </div>
         <div className="flex items-center gap-1 text-gray-500 dark:text-gray-400 font-medium">
           <Clock size={16} />
@@ -55,23 +67,13 @@ const KitchenOrderCard = ({ order, onStatusUpdate }) => {
 
       {/* Actions */}
       <div className="mt-auto pt-4 border-t border-gray-100 dark:border-gray-700">
-        {order.status === 'placed' ? (
-          <button
-            onClick={() => onStatusUpdate(order._id, 'cooking')}
-            className="w-full py-4 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-bold text-xl flex items-center justify-center gap-2 transition-colors shadow-lg shadow-blue-200 dark:shadow-none"
-          >
-            <Flame size={24} />
-            Start Cooking
-          </button>
-        ) : (
-          <button
-            onClick={() => onStatusUpdate(order._id, 'ready')}
-            className="w-full py-4 rounded-lg bg-green-600 hover:bg-green-700 text-white font-bold text-xl flex items-center justify-center gap-2 transition-colors shadow-lg shadow-green-200 dark:shadow-none"
-          >
-            <CheckCircle size={24} />
-            Mark Ready
-          </button>
-        )}
+        <button
+          onClick={() => onStatusUpdate(order._id, 'ready')}
+          className="w-full py-4 rounded-lg bg-green-600 hover:bg-green-700 text-white font-bold text-xl flex items-center justify-center gap-2 transition-colors shadow-lg shadow-green-200 dark:shadow-none"
+        >
+          <CheckCircle size={24} />
+          Mark Ready
+        </button>
       </div>
     </div>
   );
@@ -89,11 +91,11 @@ const KitchenDashboard = () => {
   const fetchOrders = useCallback(async () => {
     if (!outletId) return;
     try {
-      // Kitchen wants Placed and Cooking orders
+      // Kitchen only sees orders that have been accepted (cooking status)
       const res = await api.get(`/api/manager/orders/${outletId}?status=active`);
       if (res.data.success) {
-        // Filter mainly for kitchen relevant statuses
-        const kitchenOrders = res.data.data.filter((o) => ['placed', 'cooking'].includes(o.status));
+        // Kitchen only shows 'cooking' orders (already accepted by waiter/manager)
+        const kitchenOrders = res.data.data.filter((o) => o.status === 'cooking');
         setOrders(kitchenOrders);
       }
     } catch (error) {
@@ -113,16 +115,15 @@ const KitchenDashboard = () => {
     try {
       const res = await api.put(`/api/manager/orders/${orderId}/status`, { status: newStatus });
       if (res.data.success) {
-        toast.success(newStatus === 'cooking' ? 'Order started!' : 'Order ready for service!');
-        fetchOrders(); // Refresh to remove 'ready' orders or update 'placed'->'cooking'
+        toast.success('Order ready for service!');
+        fetchOrders(); // Refresh
       }
     } catch {
       toast.error('Failed to update status');
     }
   };
 
-  const pendingOrders = orders.filter((o) => o.status === 'placed');
-  const cookingOrders = orders.filter((o) => o.status === 'cooking');
+  const cookingOrders = orders; // All orders are 'cooking' status
 
   if (loading && orders.length === 0) {
     return (
@@ -153,35 +154,21 @@ const KitchenDashboard = () => {
         </button>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-[calc(100vh-140px)]">
-        {/* New Orders Column */}
-        <div className="flex flex-col bg-gray-200/50 dark:bg-gray-800/30 rounded-2xl p-4 border border-gray-200 dark:border-gray-800">
-          <h2 className="text-xl font-bold text-gray-700 dark:text-gray-300 mb-4 flex items-center gap-2 uppercase tracking-wide">
-            <span className="w-3 h-3 rounded-full bg-blue-500"></span>
-            New Orders ({pendingOrders.length})
-          </h2>
-          <div className="flex-1 overflow-y-auto space-y-4 pr-2 custom-scrollbar">
-            {pendingOrders.map((order) => (
-              <KitchenOrderCard key={order._id} order={order} onStatusUpdate={handleStatusUpdate} />
-            ))}
-            {pendingOrders.length === 0 && (
-              <div className="text-center py-20 text-gray-400 font-medium">No new orders</div>
-            )}
-          </div>
-        </div>
-
-        {/* Cooking Column */}
+      <div className="grid grid-cols-1 gap-6 h-[calc(100vh-140px)]">
+        {/* Cooking Column - Single column showing all accepted orders */}
         <div className="flex flex-col bg-orange-50/50 dark:bg-gray-800/30 rounded-2xl p-4 border border-orange-100 dark:border-gray-800">
           <h2 className="text-xl font-bold text-gray-700 dark:text-gray-300 mb-4 flex items-center gap-2 uppercase tracking-wide">
             <span className="w-3 h-3 rounded-full bg-orange-500 animate-pulse"></span>
-            Cooking ({cookingOrders.length})
+            Orders to Prepare ({cookingOrders.length})
           </h2>
           <div className="flex-1 overflow-y-auto space-y-4 pr-2 custom-scrollbar">
             {cookingOrders.map((order) => (
               <KitchenOrderCard key={order._id} order={order} onStatusUpdate={handleStatusUpdate} />
             ))}
             {cookingOrders.length === 0 && (
-              <div className="text-center py-20 text-gray-400 font-medium">Nothing on the grill</div>
+              <div className="text-center py-20 text-gray-400 font-medium">
+                No orders to prepare. Waiting for waiter/manager to accept orders.
+              </div>
             )}
           </div>
         </div>

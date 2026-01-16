@@ -34,6 +34,7 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/public', publicRoutes);
 app.use('/api', menuRoutes);
 app.use('/api/manager/staff', staffRoutes);
+app.use('/api/waiter', staffRoutes);
 app.use('/api', reservationRoutes);
 app.use('/api', orderRoutes);
 app.use('/api/manager/tables', tableRoutes);

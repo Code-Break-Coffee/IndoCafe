@@ -1,25 +1,26 @@
 import React from 'react';
 import { useCart } from '../../context/CartContextValues';
-import { useOutlet } from '../../context/OutletContextValues'; // Use outlet context to get currency or validate
+import { useOutlet } from '../../context/OutletContextValues';
 import Button from '../ui/Button';
-import { X, Minus, Plus, ShoppingBag } from 'lucide-react';
+import { X, Minus, Plus, ShoppingBag, MapPin } from 'lucide-react';
 import api from '../../lib/axios';
 import toast from 'react-hot-toast';
 
 const CartDrawer = () => {
-  const { cartItems, cartTotal, isCartOpen, setIsCartOpen, updateQuantity, clearCart } = useCart();
+  const { cartItems, cartTotal, isCartOpen, setIsCartOpen, updateQuantity, clearCart, tableInfo, clearTableInfo } =
+    useCart();
   const { selectedOutlet } = useOutlet();
 
   const handleCheckout = async () => {
     if (!selectedOutlet) {
-      toast.error('Please select an outlet first.'); // Should not happen ideally
+      toast.error('Please select an outlet first.');
       return;
     }
 
     try {
       // Transform cart items to match API expectation
       const orderItems = cartItems.map((item) => ({
-        menuItem: item._id, // or item.menuItemId depending on data structure
+        menuItem: item._id,
         quantity: item.quantity,
         modifiers: item.modifiers,
       }));
@@ -28,6 +29,7 @@ const CartDrawer = () => {
         outletId: selectedOutlet._id,
         items: orderItems,
         totalAmount: cartTotal,
+        ...(tableInfo && { tableId: tableInfo.tableId }), // Include tableId if customer selected a table
       };
 
       // API call to create order
@@ -36,6 +38,7 @@ const CartDrawer = () => {
       if (res.data.success) {
         toast.success('Order Placed Successfully!');
         clearCart();
+        clearTableInfo();
         setIsCartOpen(false);
       }
     } catch (error) {
@@ -107,6 +110,19 @@ const CartDrawer = () => {
 
         {cartItems.length > 0 && (
           <div className="p-4 border-t border-white/10 bg-surface">
+            {/* Table Info Display */}
+            {tableInfo && (
+              <div className="mb-4 p-3 bg-blue-500/10 border border-blue-500/30 rounded-lg flex items-center gap-2">
+                <MapPin className="w-4 h-4 text-blue-400" />
+                <div>
+                  <p className="text-xs text-secondary">Dine-In</p>
+                  <p className="text-sm font-semibold text-text">
+                    Table {tableInfo.tableName} • Floor {tableInfo.floor}
+                  </p>
+                </div>
+              </div>
+            )}
+
             <div className="flex justify-between items-center mb-4">
               <button onClick={clearCart} className="text-sm text-red-500 hover:text-red-400">
                 Clear Cart

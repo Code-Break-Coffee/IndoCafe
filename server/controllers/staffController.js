@@ -1,7 +1,6 @@
 import mongoose from 'mongoose';
 import User from '../models/User.js';
 import StaffProfile from '../models/StaffProfile.js';
-import bcrypt from 'bcryptjs';
 
 export const createStaff = async (req, res) => {
   const session = await mongoose.startSession();
@@ -37,15 +36,11 @@ export const createStaff = async (req, res) => {
       throw new Error('User with this email already exists');
     }
 
-    // Hash password
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
-
-    // 1. Create User
+    // 1. Create User (password will be hashed by User model pre-save middleware)
     const newUser = new User({
       name,
       email,
-      password: hashedPassword,
+      password, // Pass plain password, User model will hash it
       role,
       phoneNumber: phoneNumber || '000-000-0000', // Default if not provided
       position: position || '', // Optional position logic

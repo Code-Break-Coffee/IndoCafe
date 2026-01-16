@@ -1,14 +1,44 @@
 import Table from '../models/Table.js';
+import Order from '../models/Order.js';
 import { sendResponse } from '../utils/responseHandler.js';
 
-// @desc    Get all tables for an outlet
+// @desc    Get all tables for an outlet (or only assigned tables for waiters)
 // @route   GET /api/manager/tables/:outletId
-// @access  Private (Manager/Admin)
+// @access  Private (Manager/Admin/Waiter)
 export const getOutletTables = async (req, res) => {
   try {
     const { outletId } = req.params;
-    const tables = await Table.find({ outletId });
-    sendResponse(res, 200, tables, 'Tables retrieved successfully', true);
+    const userId = req.user._id;
+    const userRole = req.user.role;
+
+    // Build filter: get all tables for the outlet (waiters can see all tables now)
+    let filter = { outletId };
+    // Removed waiter-specific filter since waiters need to see all tables for billing/availability management
+
+    const tables = await Table.find(filter).populate(
+      'currentOrderId',
+      'items status notes customerId'
+    );
+
+    // Return tables with their stored isOccupied flag (only changed by manual release/reserve)
+    const enrichedTables = tables.map((table) => {
+      const tableObj = table.toObject();
+      // Use the table's stored isOccupied flag - don't override based on order status
+      // This ensures tables stay occupied until waiter manually releases them
+      // Include the customer ID of the order occupying the table
+      if (table.currentOrderId && table.currentOrderId.customerId) {
+        tableObj.orderCustomerId = table.currentOrderId.customerId;
+      }
+      return tableObj;
+    });
+
+    sendResponse(
+      res,
+      200,
+      enrichedTables,
+      'Tables retrieved successfully',
+      true
+    );
   } catch (error) {
     console.error('Error fetching tables:', error);
     sendResponse(res, 500, null, 'Failed to fetch tables', false);
@@ -87,5 +117,63 @@ export const deleteTable = async (req, res) => {
   } catch (error) {
     console.error('Error deleting table:', error);
     sendResponse(res, 500, null, 'Failed to delete table', false);
+  }
+};
+
+// @desc    Reserve a table
+// @route   POST /api/waiter/tables/:tableId/reserve
+// @access  Private (Waiter/Manager)
+export const reserveTable = async (req, res) => {
+  try {
+    const { tableId } = req.params;
+    const { guestName, partySize, reservationTime } = req.body;
+
+    if (!guestName || !partySize || !reservationTime) {
+      return sendResponse(
+        res,
+        400,
+        null,
+        'Missing required fields: guestName, partySize, reservationTime',
+        false
+      );
+    }
+
+    const table = await Table.findById(tableId);
+    if (!table) {
+      return sendResponse(res, 404, null, 'Table not found', false);
+    }
+
+    // Mark table as occupied
+    table.isOccupied = true;
+    await table.save();
+
+    sendResponse(res, 200, table, 'Table reserved successfully', true);
+  } catch (error) {
+    console.error('Error reserving table:', error);
+    sendResponse(res, 500, null, 'Failed to reserve table', false);
+  }
+};
+
+// @desc    Release a table (mark as available)
+// @route   POST /api/waiter/tables/:tableId/release
+// @access  Private (Waiter/Manager)
+export const releaseTable = async (req, res) => {
+  try {
+    const { tableId } = req.params;
+
+    const table = await Table.findByIdAndUpdate(
+      tableId,
+      { isOccupied: false, currentOrderId: null },
+      { new: true }
+    );
+
+    if (!table) {
+      return sendResponse(res, 404, null, 'Table not found', false);
+    }
+
+    sendResponse(res, 200, table, 'Table released successfully', true);
+  } catch (error) {
+    console.error('Error releasing table:', error);
+    sendResponse(res, 500, null, 'Failed to release table', false);
   }
 };
