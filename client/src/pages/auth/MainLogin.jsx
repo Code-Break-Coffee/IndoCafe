@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { useTheme } from '../../context/ThemeContext';
+import { useTheme } from '../../context/useTheme';
 import { Sun, Moon, Lock, ChefHat, Users, Shield, Briefcase } from 'lucide-react';
 
 const MainLogin = () => {

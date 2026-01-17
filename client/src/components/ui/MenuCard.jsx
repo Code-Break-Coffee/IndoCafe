@@ -7,12 +7,14 @@ const MenuCard = ({ item }) => {
 
   return (
     <div className="bg-surface rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 flex flex-col h-full border border-secondary/10">
-      <div className="h-48 overflow-hidden">
-        <img
-          src={item.image}
-          alt={item.name}
-          className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-        />
+      <div className="h-48 overflow-hidden bg-secondary/10">
+        {item.image && (
+          <img
+            src={item.image}
+            alt={item.name}
+            className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+          />
+        )}
       </div>
       <div className="p-5 flex flex-col flex-grow">
         <div className="flex justify-between items-start mb-2">

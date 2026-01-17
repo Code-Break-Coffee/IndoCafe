@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useCart } from '../../context/CartContextValues';
 import { useOutlet } from '../../context/OutletContextValues';
-import { useTheme } from '../../context/ThemeContext';
+import { useTheme } from '../../context/useTheme';
 import Button from '../ui/Button';
 import { MapPin, ChevronDown, Sun, Moon, ShoppingBag, X, Loader2 } from 'lucide-react';
 import OutletSelector from './OutletSelector';

@@ -4,7 +4,7 @@ import { Save, Trash2, Grid, ZoomIn, ZoomOut, Move, Square, Circle as CircleIcon
 import Button from '../ui/Button';
 import api from '../../lib/axios';
 import toast from 'react-hot-toast';
-import { useTheme } from '../../context/ThemeContext'; // Assuming we have this, or check Context
+import { useTheme } from '../../context/useTheme';
 
 // Constants
 const GRID_SIZE = 20;
