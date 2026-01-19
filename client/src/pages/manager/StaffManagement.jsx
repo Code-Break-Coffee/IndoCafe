@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContextValues';
 import { useOutlet } from '../../context/OutletContextValues';
 import axios from '../../lib/axios';
-import Button from '../../components/ui/Button';
+import { Button } from '../../components/ui/button';
 import { Plus, Trash2, Edit, X, User, Users } from 'lucide-react';
 // import { useTheme } from '../../context/ThemeContext';
 

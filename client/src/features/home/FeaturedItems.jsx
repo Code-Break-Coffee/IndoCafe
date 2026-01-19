@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import MenuCard from '../../components/ui/MenuCard';
-import Button from '../../components/ui/Button';
+import { Button } from '../../components/ui/button';
 import { useOutlet } from '../../context/OutletContextValues';
 import api from '../../lib/axios';
 

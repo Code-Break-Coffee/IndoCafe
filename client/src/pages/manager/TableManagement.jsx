@@ -4,7 +4,7 @@ import TableReservationUI from '../../components/waiter/TableReservationUI';
 import { useAuth } from '../../context/AuthContextValues';
 import { useOutlet } from '../../context/OutletContextValues';
 import api from '../../lib/axios';
-import Button from '../../components/ui/Button';
+import { Button } from '../../components/ui/button';
 import { LayoutDashboard, List, Plus, Trash2, Edit2, X, Filter } from 'lucide-react';
 import toast from 'react-hot-toast';
 

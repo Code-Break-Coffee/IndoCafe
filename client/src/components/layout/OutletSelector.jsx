@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useOutlet } from '../../context/OutletContextValues';
 import api from '../../lib/axios';
-import Button from '../ui/Button';
+import { Button } from '../ui/button';
 
 const OutletSelector = ({ onClose }) => {
   const { setOutlet } = useOutlet();

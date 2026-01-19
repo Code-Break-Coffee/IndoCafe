@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { Stage, Layer, Rect, Circle, Text, Group, Transformer } from 'react-konva';
 import { Save, Trash2, Grid, ZoomIn, ZoomOut, Move, Square, Circle as CircleIcon, Layout, Monitor } from 'lucide-react';
-import Button from '../ui/Button';
+import { Button } from '../ui/Button';
 import api from '../../lib/axios';
 import toast from 'react-hot-toast';
 import { useTheme } from '../../context/useTheme';

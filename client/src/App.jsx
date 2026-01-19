@@ -31,6 +31,8 @@ import KitchenDashboard from './pages/kitchen/KitchenDashboard';
 // Waiter Pages
 import WaiterDashboard from './pages/waiter/WaiterDashboard';
 
+import OrderSession from './pages/Order/OrderSession';
+
 import { CartProvider } from './context/CartContext';
 import CartDrawer from './components/cart/CartDrawer';
 import { Toaster } from 'react-hot-toast';
@@ -43,16 +45,14 @@ function App() {
           <CartProvider>
             <Router>
               <Routes>
-                {/* Public Routes */}
                 <Route path="/home" element={<Home />} />
-                <Route path="/:outletId/:tableId" element={<Home />} />
+                <Route path="/:outletId/:tableId" element={<OrderSession />} />
                 <Route path="/" element={<Navigate to="/home" replace />} />
                 <Route path="/login" element={<Login />} />
                 <Route
                   path="/unauthorized"
                   element={<div className="p-10 text-center text-2xl text-red-600">Unauthorized Access</div>}
                 />
-
                 {/* Super Admin Routes */}
                 <Route
                   path="/admin"
@@ -69,7 +69,6 @@ function App() {
                   <Route path="analytics" element={<Analytics />} />
                   <Route index element={<Navigate to="/admin/overview" replace />} />
                 </Route>
-
                 {/* Manager Routes */}
                 <Route
                   path="/manager"
@@ -85,7 +84,6 @@ function App() {
                   <Route path="tables" element={<TableManagement />} />
                   <Route index element={<Navigate to="/manager/live-orders" replace />} />
                 </Route>
-
                 {/* Kitchen Routes */}
                 <Route
                   path="/kitchen"
@@ -97,7 +95,6 @@ function App() {
                 >
                   <Route index element={<KitchenDashboard />} />
                 </Route>
-
                 {/* Waiter Routes */}
                 <Route
                   path="/waiter"
@@ -109,7 +106,6 @@ function App() {
                 >
                   <Route index element={<WaiterDashboard />} />
                 </Route>
-
                 {/* Dispatcher Routes */}
                 <Route
                   path="/dispatcher"
@@ -119,7 +115,6 @@ function App() {
                     </ProtectedRoute>
                   }
                 />
-
                 {/* Catch all - redirect to home */}
                 <Route path="*" element={<Navigate to="/home" replace />} />
               </Routes>

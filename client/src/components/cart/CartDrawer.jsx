@@ -1,7 +1,7 @@
 import React from 'react';
 import { useCart } from '../../context/CartContextValues';
 import { useOutlet } from '../../context/OutletContextValues';
-import Button from '../ui/Button';
+import { Button } from '../ui/button';
 import { X, Minus, Plus, ShoppingBag, MapPin } from 'lucide-react';
 import api from '../../lib/axios';
 import toast from 'react-hot-toast';

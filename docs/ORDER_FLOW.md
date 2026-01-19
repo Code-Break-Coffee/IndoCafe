@@ -2,10 +2,17 @@
 
 ## Overview
 
-The Indo Cafe ordering system is designed around a **Universal Order Interface** where the "Home Page" adapts to the user's context:
+The Indo Cafe ordering system is designed around a **Universal Order Interface** that adapts to the **Operational Mode** of the outlet:
 
-1.  **Dine-In (QR Code)**: Primary flow. User is at a physical table.
-2.  **Delivery/Takeaway**: User is remote (Future Phase).
+1.  **Dine-In (QR Code)**:
+    - **Context**: Physical Table.
+    - **Route**: `/:outletId/:tableId`
+    - **UI**: "Order Session" (Mobile First). Focus on speed and current meal status.
+
+2.  **Cloud Kitchen / Delivery**:
+    - **Context**: Remote User.
+    - **Route**: `/home` (Active Outlet Selection).
+    - **UI**: "Landing Page" -> "Digital Menu". Focus on address capture and marketing.
 
 ---
 

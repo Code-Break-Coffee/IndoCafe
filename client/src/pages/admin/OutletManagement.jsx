@@ -3,7 +3,7 @@ import { useOutlet } from '../../context/OutletContextValues';
 import api from '../../lib/axios';
 import { Plus, Store, UserPlus, MapPin, Phone, Loader2, X, Eye } from 'lucide-react';
 import LocationPicker from '../../components/ui/LocationPicker';
-import Button from '../../components/ui/Button';
+import { Button } from '../../components/ui/button';
 import LiveOrders from '../manager/LiveOrders';
 import MenuControl from '../manager/MenuControl';
 import TableManagement from '../manager/TableManagement';
