@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import ClassicLoader from '@/components/ui/loader';
 import { useAuth } from '../../context/AuthContextValues';
 import { useTheme } from '../../context/useTheme';
-import { Lock, Mail, Loader2, Sun, Moon } from 'lucide-react';
+import { Lock, Mail, Sun, Moon } from 'lucide-react';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -109,7 +110,7 @@ const Login = () => {
             >
               {isSubmitting ? (
                 <>
-                  <Loader2 className="animate-spin -ml-1 mr-2 h-4 w-4" />
+                  <ClassicLoader className="h-4 w-4 border-2 border-white/70 border-t-transparent" />
                   Signing in...
                 </>
               ) : (

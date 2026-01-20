@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import ClassicLoader from '@/components/ui/loader';
 import { useAuth } from '../../context/AuthContextValues';
 import { useOutlet } from '../../context/OutletContextValues';
 import api from '../../lib/axios';
@@ -252,7 +253,7 @@ const WaiterDashboard = () => {
   if (loading && readyOrders.length === 0 && occupiedTables.length === 0) {
     return (
       <div className="flex justify-center items-center h-screen bg-gray-100 dark:bg-gray-900">
-        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary"></div>
+        <ClassicLoader className="h-10 w-10 border-b-2 border-primary" />
       </div>
     );
   }

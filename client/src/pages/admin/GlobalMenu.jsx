@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import ClassicLoader from '@/components/ui/loader';
 import { menuService } from '../../services/menuService';
-import { Plus, Image as ImageIcon, Loader, Search, Filter } from 'lucide-react';
+import { Plus, Image as ImageIcon, Search, Filter } from 'lucide-react';
 
 const GlobalMenu = () => {
   const [items, setItems] = useState([]);
@@ -119,7 +120,7 @@ const GlobalMenu = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-screen text-primary">
-        <Loader className="w-10 h-10 animate-spin" />
+        <ClassicLoader className="w-10 h-10" />
       </div>
     );
   }

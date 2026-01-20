@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import ClassicLoader from '@/components/ui/loader';
 import { menuService } from '../../services/menuService';
 import { useAuth } from '../../context/AuthContextValues';
 import api from '../../lib/axios';
-import { Edit2, Check, X, Loader, Image as ImageIcon, ChevronDown, AlertCircle } from 'lucide-react';
+import { Edit2, Check, X, Image as ImageIcon, ChevronDown, AlertCircle } from 'lucide-react';
 
 const MenuControl = () => {
   const { user } = useAuth();
@@ -130,7 +131,7 @@ const MenuControl = () => {
   if (loading && !items.length) {
     return (
       <div className="flex items-center justify-center h-screen text-primary">
-        <Loader className="w-10 h-10 animate-spin" />
+        <ClassicLoader className="w-10 h-10" />
       </div>
     );
   }

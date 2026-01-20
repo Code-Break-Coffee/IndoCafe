@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
+import ClassicLoader from '@/components/ui/loader';
 import { useOutlet } from '../../context/OutletContextValues';
 import api from '../../lib/axios';
-import { Plus, Store, UserPlus, MapPin, Phone, Loader2, X, Eye } from 'lucide-react';
+import { Plus, Store, UserPlus, MapPin, Phone, X, Eye } from 'lucide-react';
 import LocationPicker from '../../components/ui/LocationPicker';
 import { Button } from '../../components/ui/button';
 import LiveOrders from '../manager/LiveOrders';
@@ -139,7 +140,7 @@ const OutletManagement = () => {
   if (loading)
     return (
       <div className="flex justify-center p-10">
-        <Loader2 className="animate-spin h-8 w-8 text-primary" />
+        <ClassicLoader className="h-8 w-8 text-primary" />
       </div>
     );
 

@@ -1,4 +1,5 @@
-import { Plus, Loader2, Filter } from 'lucide-react';
+import ClassicLoader from '@/components/ui/loader';
+import { Plus, Filter } from 'lucide-react';
 import { useEffect, useState, useCallback } from 'react';
 import api from '../../lib/axios';
 
@@ -207,7 +208,7 @@ const UserManagement = () => {
   if (loading)
     return (
       <div className="flex justify-center p-10">
-        <Loader2 className="animate-spin h-8 w-8 text-primary" />
+        <ClassicLoader className="h-8 w-8 text-primary" />
       </div>
     );
 

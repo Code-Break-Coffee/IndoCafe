@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import ClassicLoader from '@/components/ui/loader';
 import { useOutlet } from '../../context/OutletContextValues';
 import { useCart } from '../../context/CartContextValues';
 import api from '../../lib/axios';
@@ -56,7 +57,7 @@ const DineInModal = ({ onClose }) => {
 
         {loading ? (
           <div className="flex justify-center py-8">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+            <ClassicLoader className="h-8 w-8 border-b-2 border-primary" />
           </div>
         ) : tables.length === 0 ? (
           <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4 flex gap-3">
