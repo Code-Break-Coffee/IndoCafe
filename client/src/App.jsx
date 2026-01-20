@@ -5,6 +5,7 @@ import { ThemeProvider } from './context/ThemeContext';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import Login from './pages/admin/Login';
 import Home from './pages/Home/Home';
+import { PageNotFoundDemo } from './components/ui/404-page-not-found-demo';
 
 // Layouts
 import AdminLayout from './layouts/AdminLayout';
@@ -115,8 +116,8 @@ function App() {
                     </ProtectedRoute>
                   }
                 />
-                {/* Catch all - redirect to home */}
-                <Route path="*" element={<Navigate to="/home" replace />} />
+                {/* Catch all - redirect to error */}
+                <Route path="*" element={<PageNotFoundDemo />} />
               </Routes>
 
               <CartDrawer />

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import ClassicLoader from '@/components/ui/loader';
 import FloorPlanEditor from '../../components/floorplan/FloorPlanEditor';
 import TableReservationUI from '../../components/waiter/TableReservationUI';
 import { useAuth } from '../../context/AuthContextValues';
@@ -268,7 +269,7 @@ const TableManagement = () => {
               <div className="p-6 overflow-y-auto h-full">
                 {loading ? (
                   <div className="flex flex-col items-center justify-center h-64 text-gray-500 dark:text-gray-400">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mb-2"></div>
+                    <ClassicLoader className="h-8 w-8 border-b-2 border-primary mb-2" />
                     <p>Loading tables...</p>
                   </div>
                 ) : tables.length === 0 ? (

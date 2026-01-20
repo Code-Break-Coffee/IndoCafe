@@ -1,14 +1,6 @@
-import {
-  LayoutDashboard,
-  TrendingUp,
-  ShoppingBag,
-  Users,
-  AlertCircle,
-  CheckCircle,
-  XCircle,
-  Loader2,
-} from 'lucide-react';
+import { LayoutDashboard, TrendingUp, ShoppingBag, Users, AlertCircle, CheckCircle, XCircle } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import ClassicLoader from '@/components/ui/loader';
 import api from '../../lib/axios';
 
 const Dashboard = () => {
@@ -132,12 +124,12 @@ const Dashboard = () => {
       <div className="bg-surface rounded-xl shadow-sm border border-secondary/10 p-6">
         <div className="flex items-center justify-between mb-6">
           <h3 className="text-lg font-semibold text-text">Pending Price Change Requests</h3>
-          {loadingRequests && <Loader2 className="animate-spin text-primary" size={20} />}
+          {loadingRequests && <ClassicLoader className="h-5 w-5 border-2 border-primary border-t-transparent" />}
         </div>
 
         {loadingRequests && priceRequests.length === 0 ? (
           <div className="flex items-center justify-center py-8">
-            <Loader2 className="animate-spin text-primary" size={24} />
+            <ClassicLoader className="h-6 w-6 border-2 border-primary border-t-transparent" />
           </div>
         ) : priceRequests.length === 0 ? (
           <div className="text-center py-8 text-secondary">
@@ -175,7 +167,7 @@ const Dashboard = () => {
                   >
                     {approvingId === request._id ? (
                       <>
-                        <Loader2 size={16} className="animate-spin" />
+                        <ClassicLoader className="h-4 w-4 border-2 border-white/80 border-t-transparent" />
                         <span>Approving</span>
                       </>
                     ) : (

@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import ClassicLoader from '@/components/ui/loader';
 import { useAuth } from '../../context/AuthContextValues';
 import { useTheme } from '../../context/useTheme';
-import { Lock, Mail, Loader2, Sun, Moon, ChefHat } from 'lucide-react';
+import { Lock, Mail, Sun, Moon, ChefHat } from 'lucide-react';
 
 const KitchenLogin = () => {
   const [email, setEmail] = useState('');
@@ -102,7 +103,7 @@ const KitchenLogin = () => {
             >
               {isSubmitting ? (
                 <>
-                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <ClassicLoader className="h-4 w-4 border-2 border-white/70 border-t-transparent" />
                   Logging in...
                 </>
               ) : (

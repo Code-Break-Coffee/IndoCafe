@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import ClassicLoader from '@/components/ui/loader';
 import { useOutlet } from '../../context/OutletContextValues';
 import { useCart } from '../../context/CartContextValues';
 import api from '../../lib/axios';
@@ -68,7 +69,7 @@ const OrderSession = () => {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-zinc-950 flex flex-col items-center justify-center text-white p-6">
-        <div className="w-12 h-12 border-4 border-amber-500 border-t-transparent rounded-full animate-spin mb-4"></div>
+        <ClassicLoader className="w-12 h-12 border-4 border-amber-500 border-t-transparent mb-4" />
         <p className="font-medium tracking-wide">Setting up your table...</p>
       </div>
     );
