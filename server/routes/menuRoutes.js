@@ -4,6 +4,7 @@ import {
   updateOutletItemStatus,
   getOutletMenu,
   getAllGlobalMenuItems,
+  updateGlobalMenuItem,
 } from '../controllers/menuController.js';
 import { protect } from '../middleware/authMiddleware.js';
 import { authorize } from '../middleware/rbacMiddleware.js';
@@ -18,6 +19,14 @@ router
   .route('/admin/menu')
   .get(protect, authorize('SUPER_ADMIN'), getAllGlobalMenuItems)
   .post(protect, authorize('SUPER_ADMIN'), createGlobalMenuItem);
+
+// Update global menu item
+router.put(
+  '/admin/menu/:id',
+  protect,
+  authorize('SUPER_ADMIN'),
+  updateGlobalMenuItem
+);
 
 // Manager Routes
 // Note: The controller expects req.user.defaultOutletId.

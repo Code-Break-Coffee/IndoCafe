@@ -7,8 +7,67 @@ import { sendResponse } from '../utils/responseHandler.js';
 // @access  Private (Super Admin)
 export const getAllGlobalMenuItems = async (req, res) => {
   try {
-    const menuItems = await MenuItem.find({});
-    sendResponse(res, 200, menuItems, 'Menu items fetched successfully', true);
+    const { search, category, tags, veg, sort } = req.query;
+
+    const filter = {};
+
+    // Name search (case-insensitive)
+    if (search && String(search).trim().length > 0) {
+      filter.name = { $regex: String(search).trim(), $options: 'i' };
+    }
+
+    // Category exact match
+    if (category && category !== 'All') {
+      filter.category = category;
+    }
+
+    // Veg filter
+    if (veg && veg !== 'All') {
+      if (veg.toLowerCase() === 'veg' || veg === 'true') filter.isVeg = true;
+      else if (veg.toLowerCase() === 'non-veg' || veg === 'false')
+        filter.isVeg = false;
+    }
+
+    // Tags any-of filter
+    let tagsArray = [];
+    if (tags) {
+      if (Array.isArray(tags)) tagsArray = tags;
+      else if (typeof tags === 'string')
+        tagsArray = tags
+          .split(',')
+          .map((t) => t.trim())
+          .filter(Boolean);
+      if (tagsArray.length > 0) {
+        filter.tags = { $in: tagsArray };
+      }
+    }
+
+    // Sorting
+    let sortSpec = undefined;
+    if (sort === 'priceAsc') sortSpec = { basePrice: 1 };
+    if (sort === 'priceDesc') sortSpec = { basePrice: -1 };
+
+    // Pagination
+    const pageNum = Math.max(parseInt(req.query.page || '1', 10), 1);
+    const limitNum = Math.max(parseInt(req.query.limit || '10', 10), 1);
+    const skip = (pageNum - 1) * limitNum;
+
+    const total = await MenuItem.countDocuments(filter);
+    const query = MenuItem.find(filter).skip(skip).limit(limitNum);
+    if (sortSpec) query.sort(sortSpec);
+
+    const menuItems = await query.exec();
+    const totalPages = Math.max(Math.ceil(total / limitNum), 1);
+    sendResponse(
+      res,
+      200,
+      {
+        items: menuItems,
+        pagination: { page: pageNum, limit: limitNum, total, totalPages },
+      },
+      'Menu items fetched successfully',
+      true
+    );
   } catch (error) {
     console.error('Error fetching menu items:', error);
     sendResponse(res, 500, null, 'Server Error', false);
@@ -18,6 +77,23 @@ export const getAllGlobalMenuItems = async (req, res) => {
 // @desc    Create a new Global MenuItem
 // @route   POST /api/admin/menu
 // @access  Private (Super Admin)
+const ALLOWED_TAGS = [
+  'south-indian',
+  'north-indian',
+  'chinese',
+  'continental',
+  'cafe',
+  'beverages',
+  'desserts',
+  'vegan',
+  'gluten-free',
+  'quick-bites',
+  'snacks',
+  'breakfast',
+  'tandoor',
+  'biryani',
+];
+
 export const createGlobalMenuItem = async (req, res) => {
   try {
     const {
@@ -31,6 +107,20 @@ export const createGlobalMenuItem = async (req, res) => {
       tags,
     } = req.body;
 
+    const incomingTags = Array.isArray(tags) ? tags : [];
+    const invalidTags = incomingTags.filter((t) => !ALLOWED_TAGS.includes(t));
+    if (invalidTags.length) {
+      return sendResponse(
+        res,
+        400,
+        null,
+        `Invalid tags: ${invalidTags.join(', ')}. Allowed tags: ${ALLOWED_TAGS.join(', ')}`,
+        false
+      );
+    }
+
+    const sanitizedTags = [...new Set(incomingTags)];
+
     const menuItem = await MenuItem.create({
       name,
       description,
@@ -39,11 +129,56 @@ export const createGlobalMenuItem = async (req, res) => {
       image,
       isVeg,
       pieces,
-      tags,
+      tags: sanitizedTags,
     });
     sendResponse(res, 201, menuItem, 'Menu item created successfully', true);
   } catch (error) {
     console.error('Error creating menu item:', error);
+    sendResponse(res, 500, null, 'Server Error', false);
+  }
+};
+
+// @desc    Update an existing Global MenuItem
+// @route   PUT /api/admin/menu/:id
+// @access  Private (Super Admin)
+export const updateGlobalMenuItem = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Validate allowed tags if provided
+    let incomingTags = req.body.tags;
+    if (incomingTags !== undefined) {
+      incomingTags = Array.isArray(incomingTags) ? incomingTags : [];
+      const invalidTags = incomingTags.filter((t) => !ALLOWED_TAGS.includes(t));
+      if (invalidTags.length) {
+        return sendResponse(
+          res,
+          400,
+          null,
+          `Invalid tags: ${invalidTags.join(', ')}. Allowed tags: ${ALLOWED_TAGS.join(', ')}`,
+          false
+        );
+      }
+      req.body.tags = [...new Set(incomingTags)];
+    }
+
+    // Do not allow empty image string to overwrite existing value
+    if (req.body.image === '') {
+      delete req.body.image;
+    }
+
+    const updated = await MenuItem.findByIdAndUpdate(id, req.body, {
+      new: true,
+      runValidators: true,
+    });
+
+    if (!updated) {
+      return sendResponse(res, 404, null, 'Menu item not found', false);
+    }
+
+    sendResponse(res, 200, updated, 'Menu item updated successfully', true);
+  } catch (error) {
+    console.error('Error updating menu item:', error);
     sendResponse(res, 500, null, 'Server Error', false);
   }
 };

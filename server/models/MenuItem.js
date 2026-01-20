@@ -18,7 +18,7 @@ const menuItemSchema = new mongoose.Schema(
     },
     image: {
       type: String,
-      required: true,
+      required: false,
     },
     category: {
       type: String, // Can be changed to ObjectId ref 'Category' if a Category model is added later

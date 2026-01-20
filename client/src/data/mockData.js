@@ -49,3 +49,16 @@ export const serviceTypes = [
     action: 'Book a Table',
   },
 ];
+
+export const tags = [
+  { id: 'south-indian', label: 'South Indian' },
+  { id: 'north-indian', label: 'North Indian' },
+  { id: 'chinese', label: 'Chinese' },
+  { id: 'continental', label: 'Continental' },
+  { id: 'cafe', label: 'Cafe' },
+  { id: 'beverages', label: 'Beverages' },
+  { id: 'desserts', label: 'Desserts' },
+  { id: 'vegan', label: 'Vegan' },
+  { id: 'gluten-free', label: 'Gluten Free' },
+  { id: 'quick-bites', label: 'Quick Bites' },
+];

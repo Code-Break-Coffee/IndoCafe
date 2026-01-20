@@ -3,10 +3,9 @@ import api from '../lib/axios';
 
 export const menuService = {
   // Admin: Fetch all global menu items
-  getAllMenuItems: async () => {
-    // Assuming GET /api/admin/menu returns all items.
-    // If not, this might need to be adjusted to the correct endpoint.
-    const response = await api.get('/api/admin/menu');
+  getAllMenuItems: async (filters = {}) => {
+    // Supports query filters: search, category, tags (array), veg, sort
+    const response = await api.get('/api/admin/menu', { params: filters });
     return response.data;
   },
 
@@ -26,6 +25,12 @@ export const menuService = {
     return response.data;
   },
 
+  // Admin: Update a global menu item
+  updateMenuItem: async (itemId, data) => {
+    const response = await api.put(`/api/admin/menu/${itemId}`, data);
+    return response.data;
+  },
+
   // Manager: Update item status and price for their outlet
   updateItemStatus: async (itemId, { isAvailable, price, outletId }) => {
     const response = await api.put(`/api/manager/menu/${itemId}/status`, {
@@ -40,19 +45,27 @@ export const menuService = {
   uploadImageToCloudinary: async (file) => {
     try {
       const upload_preset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
+      const cloud_name = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
+
+      if (!upload_preset || !cloud_name) {
+        const missing = [
+          !upload_preset ? 'VITE_CLOUDINARY_UPLOAD_PRESET' : null,
+          !cloud_name ? 'VITE_CLOUDINARY_CLOUD_NAME' : null,
+        ]
+          .filter(Boolean)
+          .join(', ');
+        throw new Error(`Missing Cloudinary env: ${missing}. Configure in client/.env and restart dev server.`);
+      }
       const data = new FormData();
       data.append('file', file);
 
       data.append('upload_preset', upload_preset);
-      const res = await axios.post(
-        `https://api.cloudinary.com/v1_1/${import.meta.env.VITE_CLOUDINARY_CLOUD_NAME}/image/upload`,
-        data
-      );
+      const res = await axios.post(`https://api.cloudinary.com/v1_1/${cloud_name}/image/upload`, data);
 
       return res.data.secure_url;
     } catch (error) {
       // 🔥 THIS is what we need
-      console.error('Cloudinary response:', error.response?.data);
+      console.error('Cloudinary upload error:', error.response?.data || error.message);
       throw error;
     }
   },
