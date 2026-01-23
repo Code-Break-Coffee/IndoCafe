@@ -47,6 +47,11 @@ const orderSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Table',
     },
+    // Table session ID at time of order (changes when table is released)
+    tableSessionId: {
+      type: String,
+      default: null,
+    },
     // Customer identifier (for unauthenticated orders)
     customerId: {
       type: String,

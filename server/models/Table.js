@@ -39,6 +39,11 @@ const tableSchema = new mongoose.Schema(
       ref: 'Order',
       default: null,
     },
+    sessionId: {
+      type: String,
+      default: () =>
+        `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+    },
     assignedWaiterId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',

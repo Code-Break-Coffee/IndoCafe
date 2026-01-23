@@ -161,9 +161,12 @@ export const releaseTable = async (req, res) => {
   try {
     const { tableId } = req.params;
 
+    // Generate new sessionId to invalidate old customer sessions
+    const newSessionId = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+
     const table = await Table.findByIdAndUpdate(
       tableId,
-      { isOccupied: false, currentOrderId: null },
+      { isOccupied: false, currentOrderId: null, sessionId: newSessionId },
       { new: true }
     );
 
