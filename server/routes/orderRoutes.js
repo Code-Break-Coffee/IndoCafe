@@ -2,6 +2,7 @@ import express from 'express';
 import {
   createOrder,
   getOutletOrders,
+  getTableOrders,
   updateOrderStatus,
 } from '../controllers/orderController.js';
 import { protect } from '../middleware/authMiddleware.js';
@@ -11,6 +12,7 @@ const router = express.Router();
 
 // Public
 router.post('/public/orders', createOrder);
+router.get('/public/orders/table/:tableId', getTableOrders);
 
 // Manager, Waiter & Kitchen
 router.get(
