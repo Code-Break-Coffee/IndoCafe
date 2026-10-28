@@ -23,7 +23,7 @@
     "framer-motion": "^12.27.0",
     "konva": "^10.0.12",
     "leaflet": "^1.9.4",
-    "leaflet-geosearch": "^4.2.2",
+    "leaflet-geosearch": "^5.1.0",
     "lucide-react": "^0.562.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
